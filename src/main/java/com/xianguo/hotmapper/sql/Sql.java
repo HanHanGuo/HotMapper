@@ -13,10 +13,12 @@ public class Sql {
 	public static StringBuilder SELECT(Map<String, Field> fields) {
 		StringBuilder sb = new StringBuilder();
 		for(String key : fields.keySet()) {
-			if(StringUtils.isEmpty(sb.toString())) {
-				sb.append(fields.get(key).getDataBase());
-			}else {
-				sb.append(',').append(fields.get(key).getDataBase());
+			if(!fields.get(key).getIsCondition()) {
+				if(StringUtils.isEmpty(sb.toString())) {
+					sb.append(fields.get(key).getDataBase());
+				}else {
+					sb.append(',').append(fields.get(key).getDataBase());
+				}
 			}
 		}
 		StringBuilder select = new StringBuilder();
@@ -127,10 +129,12 @@ public class Sql {
 		StringBuilder where = new StringBuilder();
 		where.append("set ");
 		for(String key : fields.keySet()) {
-			if(StringUtils.isEmpty(sb.toString())) {
-				sb.append(fields.get(key).getField().getDataBase()).append(" = ").append("#{").append(fields.get(key).getField().getField()).append("}");
-			}else {
-				sb.append(",").append(fields.get(key).getField().getDataBase()).append(" = ").append("#{").append(fields.get(key).getField().getField()).append("}");
+			if(!fields.get(key).getField().getIsCondition()) {
+				if(StringUtils.isEmpty(sb.toString())) {
+					sb.append(fields.get(key).getField().getDataBase()).append(" = ").append("#{").append(fields.get(key).getField().getField()).append("}");
+				}else {
+					sb.append(",").append(fields.get(key).getField().getDataBase()).append(" = ").append("#{").append(fields.get(key).getField().getField()).append("}");
+				}
 			}
 		}
 		where.append(sb);
@@ -158,10 +162,12 @@ public class Sql {
 		head.append(tableName);
 		head.append("(");
 		for(String key : fields.keySet()) {
-			if(StringUtils.isEmpty(sb.toString())) {
-				sb.append(fields.get(key).getField().getDataBase());
-			}else {
-				sb.append(", ").append(fields.get(key).getField().getDataBase());
+			if(!fields.get(key).getField().getIsCondition()) {
+				if(StringUtils.isEmpty(sb.toString())) {
+					sb.append(fields.get(key).getField().getDataBase());
+				}else {
+					sb.append(", ").append(fields.get(key).getField().getDataBase());
+				}
 			}
 		}
 		head.append(sb).append(")");
@@ -175,10 +181,12 @@ public class Sql {
 		head.append("values ");
 		head.append("(");
 		for(String key : fields.keySet()) {
-			if(StringUtils.isEmpty(sb.toString())) {
-				sb.append("#{").append(fields.get(key).getField().getField()).append("}");
-			}else {
-				sb.append("#{").append(fields.get(key).getField().getField()).append("}");
+			if(!fields.get(key).getField().getIsCondition()) {
+				if(StringUtils.isEmpty(sb.toString())) {
+					sb.append("#{").append(fields.get(key).getField().getField()).append("}");
+				}else {
+					sb.append("#{").append(fields.get(key).getField().getField()).append("}");
+				}
 			}
 		}
 		head.append(sb).append(")");

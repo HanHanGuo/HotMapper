@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang.StringUtils;
 
 import com.xianguo.hotmapper.annotation.AnalysisType;
+import com.xianguo.hotmapper.annotation.Condition;
 import com.xianguo.hotmapper.annotation.HotTransient;
 import com.xianguo.hotmapper.annotation.Id;
 import com.xianguo.hotmapper.annotation.Relation;
@@ -63,6 +64,9 @@ public class Container {
 					Symbol symbol = null;
 					if((symbol = field.getAnnotation(Symbol.class)) != null) {
 						BeanFieldSave.setSymbol(symbol.value());
+					}
+					if(field.getAnnotation(Condition.class) != null) {
+						BeanFieldSave.setIsCondition(true);
 					}
 					beanField.put(field.getName(), BeanFieldSave);
 				}
