@@ -29,6 +29,17 @@ public interface SelectDao<T> {
 	public List<Map<String, Object>> selectList(@Param("bean")T t,@Param("table")Table table,@Param("class")Class<? extends T> classes);
 	
 	/**
+	 * 根据条件查询一条
+	 * @author:鲜果
+	 * @date:2019年1月16日
+	 * @param id id
+	 * @return
+	 * T 返回单个实体
+	 */
+	@SelectProvider(type=com.xianguo.hotmapper.provider.SelectProvider.class,method="selectProvider")
+	public Map<String, Object> select(@Param("bean")T t,@Param("table")Table table,@Param("class")Class<? extends T> classes);
+	
+	/**
 	 * 根据id查询一条
 	 * @author:鲜果
 	 * @date:2019年1月16日

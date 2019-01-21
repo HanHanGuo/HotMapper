@@ -10,8 +10,11 @@ import org.apache.commons.lang.StringUtils;
 import com.xianguo.hotmapper.annotation.AnalysisType;
 import com.xianguo.hotmapper.annotation.HotTransient;
 import com.xianguo.hotmapper.annotation.Id;
+import com.xianguo.hotmapper.annotation.Relation;
+import com.xianguo.hotmapper.annotation.Symbol;
 import com.xianguo.hotmapper.bean.Table;
 import com.xianguo.hotmapper.enums.AnalysusTypeEnmu;
+import com.xianguo.hotmapper.enums.SymbolEnmu;
 import com.xianguo.hotmapper.util.FieldNameUtil;
 
 public class Container {
@@ -45,7 +48,7 @@ public class Container {
 			com.xianguo.hotmapper.bean.Field idByName = null;
 			Map<String, com.xianguo.hotmapper.bean.Field> beanField = new HashMap<>();
 			for(Field field : fields) {
-				if(field.getAnnotation(HotTransient.class) == null) {
+				if(field.getAnnotation(HotTransient.class) == null && field.getAnnotation(Relation.class) == null && field.getAnnotation(Relation.class) == null) {
 					com.xianguo.hotmapper.annotation.Field databaseFieldNameAnn = field.getAnnotation(com.xianguo.hotmapper.annotation.Field.class);
 					if(idByAnn == null) {
 						Id id = field.getAnnotation(Id.class);
@@ -56,7 +59,12 @@ public class Container {
 							idByName = new com.xianguo.hotmapper.bean.Field(databaseFieldNameAnn == null ? FieldNameUtil.nameToDataBaseName(nameStyle, field.getName()) : databaseFieldNameAnn.value(),field.getName(),field.getType());
 						}
 					}
-					beanField.put(field.getName(), new com.xianguo.hotmapper.bean.Field(databaseFieldNameAnn == null ? FieldNameUtil.nameToDataBaseName(nameStyle, field.getName()) : databaseFieldNameAnn.value(),field.getName(),field.getType()));
+					com.xianguo.hotmapper.bean.Field BeanFieldSave = new com.xianguo.hotmapper.bean.Field(databaseFieldNameAnn == null ? FieldNameUtil.nameToDataBaseName(nameStyle, field.getName()) : databaseFieldNameAnn.value(),field.getName(),field.getType());
+					Symbol symbol = null;
+					if((symbol = field.getAnnotation(Symbol.class)) != null) {
+						BeanFieldSave.setSymbol(symbol.value());
+					}
+					beanField.put(field.getName(), BeanFieldSave);
 				}
 			}
 			table.setFieldsIncludeId(beanField);

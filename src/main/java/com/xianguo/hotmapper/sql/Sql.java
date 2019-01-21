@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.xianguo.hotmapper.bean.Field;
 import com.xianguo.hotmapper.bean.FieldValue;
+import com.xianguo.hotmapper.interfaces.SymbolInterface;
 
 public class Sql {
 	
@@ -31,22 +32,6 @@ public class Sql {
 		return sb;
 	}
 	
-	public static StringBuilder IN(Field field,String parName) {
-		return IN(field,parName,null,false);
-	}
-	
-	public static StringBuilder IN(Field field,String parName,String beanName,Boolean isBean) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(field.getDataBase());
-		sb.append(" in ");
-		if(isBean) {
-			sb.append("<foreach collection=\"").append(beanName).append(".").append(parName).append("\" separator=\",\" open=\"(\" close=\")\" item=\"id\">#{id}</foreach>");
-		}else {
-			sb.append("<foreach collection=\"").append(parName).append("\" separator=\",\" open=\"(\" close=\")\" item=\"value\">#{value}</foreach>");
-		}
-		return sb;
-	}
-	
 	public static StringBuilder WHERE() {
 		return new StringBuilder().append("where");
 	}
@@ -67,12 +52,19 @@ public class Sql {
 		StringBuilder sb = new StringBuilder();
 		StringBuilder where = new StringBuilder();
 		where.append("where ");
-		sb.append(field.getField().getDataBase()).append(" = ");
-		if(isBean) {
-			sb.append("#{").append(parName).append(".").append(field.getField().getField()).append("}");
-		}else {
-			sb.append("#{").append(parName).append("}");
-		}
+		sb.append(field.getField().getDataBase()).append(field.getField().getSymbol().getSymbol(new SymbolInterface() {
+			@Override
+			public String getPar() {
+				StringBuilder ymsb = new StringBuilder();
+				if(isBean) {
+					ymsb.append("#{").append(parName).append(".").append(field.getField().getField()).append("}");
+				}else {
+					ymsb.append("#{").append(parName).append("}");
+				}
+				return ymsb.toString();
+			}
+		}));
+		
 		where.append(sb);
 		return where;
 	}
@@ -81,12 +73,19 @@ public class Sql {
 		StringBuilder sb = new StringBuilder();
 		StringBuilder where = new StringBuilder();
 		where.append("where ");
-		sb.append(field.getDataBase()).append(" = ");
-		if(isBean) {
-			sb.append("#{").append(parName).append(".").append(field.getField()).append("}");
-		}else {
-			sb.append("#{").append(parName).append("}");
-		}
+		sb.append(field.getDataBase()).append(field.getSymbol().getSymbol(new SymbolInterface() {
+			
+			@Override
+			public String getPar() {
+				StringBuilder ymsb = new StringBuilder();
+				if(isBean) {
+					ymsb.append("#{").append(parName).append(".").append(field.getField()).append("}");
+				}else {
+					ymsb.append("#{").append(parName).append("}");
+				}
+				return ymsb.toString();
+			}
+		}));
 		where.append(sb);
 		return where;
 	}
@@ -102,12 +101,19 @@ public class Sql {
 			if(!StringUtils.isEmpty(sb.toString())) {
 				sb.append(" and");
 			}
-			sb.append(fields.get(key).getField().getDataBase()).append(" = ");
-			if(isBean) {
-				sb.append("#{").append(parName).append(".").append(fields.get(key).getField().getField()).append("}");
-			}else {
-				sb.append("#{").append(parName).append("}");
-			}
+			sb.append(fields.get(key).getField().getDataBase()).append(fields.get(key).getField().getSymbol().getSymbol(new SymbolInterface() {
+				
+				@Override
+				public String getPar() {
+					StringBuilder ymsb = new StringBuilder();
+					if(isBean) {
+						ymsb.append("#{").append(parName).append(".").append(fields.get(key).getField().getField()).append("}");
+					}else {
+						ymsb.append("#{").append(parName).append("}");
+					}
+					return ymsb.toString();
+				}
+			}));
 		}
 		where.append(sb);
 		return where;
@@ -122,9 +128,9 @@ public class Sql {
 		where.append("set ");
 		for(String key : fields.keySet()) {
 			if(StringUtils.isEmpty(sb.toString())) {
-				sb.append(fields.get(key).getField().getDataBase()).append(" = ").append("?");
+				sb.append(fields.get(key).getField().getDataBase()).append(" = ").append("#{").append(fields.get(key).getField().getField()).append("}");
 			}else {
-				sb.append(",").append(fields.get(key).getField().getDataBase()).append("= ").append("?");
+				sb.append(",").append(fields.get(key).getField().getDataBase()).append(" = ").append("#{").append(fields.get(key).getField().getField()).append("}");
 			}
 		}
 		where.append(sb);
@@ -170,9 +176,9 @@ public class Sql {
 		head.append("(");
 		for(String key : fields.keySet()) {
 			if(StringUtils.isEmpty(sb.toString())) {
-				sb.append("?");
+				sb.append("#{").append(fields.get(key).getField().getField()).append("}");
 			}else {
-				sb.append(", ").append("?");
+				sb.append("#{").append(fields.get(key).getField().getField()).append("}");
 			}
 		}
 		head.append(sb).append(")");

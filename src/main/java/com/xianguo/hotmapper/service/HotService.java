@@ -8,4 +8,6 @@ package com.xianguo.hotmapper.service;
  */
 public interface HotService<T> extends SaveService<T>,DeleteService<T>,UpdateService<T>,SelectService<T> {
 	
+	
+	
 }

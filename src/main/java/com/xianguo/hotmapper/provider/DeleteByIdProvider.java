@@ -13,7 +13,7 @@ public class DeleteByIdProvider extends Provider {
 		FieldValue fieldValue = FieldFilter.packingField(table.getId(), t);
 		String sql = Sql.SQL(
 				Sql.DELETE(table.getName()), 
-				Sql.WHERE(fieldValue,"id",true)
+				Sql.WHERE(fieldValue,"id",false)
 				);
 		return sql;
 	}

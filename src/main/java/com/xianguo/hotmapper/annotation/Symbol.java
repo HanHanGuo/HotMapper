@@ -5,8 +5,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.xianguo.hotmapper.enums.SymbolEnmu;
+
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface HotTransient {
-	Class<?> value() default RuntimeException.class; 
+public @interface Symbol {
+	public SymbolEnmu value();
 }

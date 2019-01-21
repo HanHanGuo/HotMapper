@@ -117,13 +117,25 @@ public class PreparedStatementUtil {
 	@SuppressWarnings("unchecked")
 	public static <T> T convertBeanByMap(Class<? extends T> classes,Map<String, Object> values,Table table) {
 		try {
+			if(values == null) {
+				return null;
+			}
 			Object obj = classes.newInstance();
+			Boolean isNull = true;
 			for(Field field : classes.getDeclaredFields()) {
 				field.setAccessible(true);
-				Object val = values.get(table.getFieldsIncludeId().get(field.getName()).getDataBase());
-				field.set(obj, val);
+				com.xianguo.hotmapper.bean.Field fieldBean = table.getFieldsIncludeId().get(field.getName());
+				if(fieldBean != null) {
+					Object val = values.get(fieldBean.getDataBase());
+					field.set(obj, val);
+					isNull = false;
+				}
 			}
-			return (T)obj;
+			if(isNull) {
+				return null;
+			}else {
+				return (T)obj;
+			}
 		} catch (InstantiationException e) {
 			log.error(e.getMessage(),e);
 			return null;

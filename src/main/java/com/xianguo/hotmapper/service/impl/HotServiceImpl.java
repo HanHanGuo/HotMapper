@@ -1,9 +1,12 @@
 package com.xianguo.hotmapper.service.impl;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.xianguo.hotmapper.bean.Table;
 import com.xianguo.hotmapper.container.Container;
@@ -11,26 +14,93 @@ import com.xianguo.hotmapper.dao.HotDao;
 import com.xianguo.hotmapper.service.HotService;
 import com.xianguo.hotmapper.util.PreparedStatementUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotService<T> {
 	
-	private Class<T> classes;
+	public Class<T> classes;
 	
-	private Table table;
+	public Table table;
+
+	@Autowired
+	private BeanFactory beanFactory;
 	
     @SuppressWarnings("unchecked")
 	protected HotServiceImpl() {
     	classes = (Class <T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     	table = Container.load(classes);
     }
+    
+    @Override
+	public T select(T t) {
+    	return PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table);
+    }
+
+    @Override
+	public T select(T t,Boolean openRelation) {
+    	if(openRelation) {
+    		return Relation(PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table), 1) ;
+    	}else {
+    		return PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table);
+    	}
+    }
+
+    @Override
+	public T select(T t,Boolean openRelation,Integer hierarchy) {
+    	if(openRelation) {
+    		return Relation(PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table), hierarchy) ;
+    	}else {
+    		return PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table);
+    	}
+    }
+    
+    
 
 	@Override
 	public List<T> selectList(T t) {
-		return (List<T>) PreparedStatementUtil.convertBeanByList(classes, getDao().selectList(t, table,classes), table);
+		return PreparedStatementUtil.convertBeanByList(classes, getDao().selectList(t, table,classes), table);
+	}
+	
+	@Override
+	public List<T> selectList(T t,Boolean openRelation) {
+		if(openRelation) {
+			return Relation(PreparedStatementUtil.convertBeanByList(classes, getDao().selectList(t, table,classes), table),1);
+		}else {
+			return selectList(t);
+		}
+	}
+	
+	@Override
+	public List<T> selectList(T t,Boolean openRelation,Integer hierarchy) {
+		if(openRelation) {
+			return Relation(PreparedStatementUtil.convertBeanByList(classes, getDao().selectList(t, table,classes), table),hierarchy);
+		}else {
+			return selectList(t);
+		}
 	}
 
 	@Override
 	public T selectById(String id) {
-		return (T) PreparedStatementUtil.convertBeanByMap(classes,getDao().selectById(id, table,classes),table);
+		return PreparedStatementUtil.convertBeanByMap(classes,getDao().selectById(id, table,classes),table);
+	}
+	
+	@Override
+	public T selectById(String id,Boolean openRelation) {
+		if(openRelation) {
+			return Relation(PreparedStatementUtil.convertBeanByMap(classes,getDao().selectById(id, table,classes),table),1);
+		}else {
+			return selectById(id);
+		}
+	}
+	
+	@Override
+	public T selectById(String id,Boolean openRelation,Integer hierarchy) {
+		if(openRelation) {
+			return Relation(PreparedStatementUtil.convertBeanByMap(classes,getDao().selectById(id, table,classes),table),hierarchy);
+		}else {
+			return selectById(id);
+		}
 	}
 
 	@Override
@@ -38,7 +108,6 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
 		return getDao().deleteById(id, table,classes);
 	}
 
-	@Transactional
 	@Override
 	public Integer deleteByIds(List<String> ids) {
 		Integer sum = 0;
@@ -58,7 +127,6 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
 		return getDao().save(t, table,classes);
 	}
 	
-	@Transactional
 	@Override
 	public Integer save(List<T> t) {
 		Integer sum = 0;
@@ -82,5 +150,70 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
 		return sum;
 	}
 	
+	public T Relation(T t,Integer hierarchy) {
+		if(t == null) {
+			return t;
+		}
+		List<T> list = new ArrayList<>();
+		list.add(t);
+		list = Relation(list,hierarchy);
+		if(list.size() > 0) {
+			return list.get(0);
+		}else {
+			return t;
+		}
+	}
+	
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public List<T> Relation(List<T> t,Integer hierarchy) {
+		try {
+			if(hierarchy <= 0) {
+				return t;
+			}
+			for(T value : t) {
+				for(Field field : classes.getDeclaredFields()) {
+					com.xianguo.hotmapper.annotation.Relation relation = null;
+					if((relation = field.getAnnotation(com.xianguo.hotmapper.annotation.Relation.class))!=null) {
+						field.setAccessible(true);
+						HotServiceImpl telationService = (HotServiceImpl) beanFactory.getBean(relation.service());
+						Class<?> parClass = telationService.classes;
+						Object par = parClass.newInstance();
+						Field parField = parClass.getDeclaredField(relation.pk());
+						parField.setAccessible(true);
+						if(parField != null) {
+							Field valField = classes.getDeclaredField(relation.fk());
+							valField.setAccessible(true);
+							if(valField != null) {
+								Object objBean = valField.get(value);
+								if(objBean != null) {
+									parField.set(par, objBean);
+									hierarchy--;
+	
+									if(field.getType().equals(List.class)) {
+										List<Object> valueBean = telationService.selectList(par,true,hierarchy);
+										if(valueBean != null && valueBean.size()>0) {
+											field.set(value, valueBean);
+										}else {
+											field.set(value, null);
+										}
+									} else {
+										Object valueBean = telationService.select(par,true,hierarchy);
+										field.set(value, valueBean);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			return t;
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+			return t;
+		}
+	}
+	
 	public abstract DAO getDao();
+	
 }
