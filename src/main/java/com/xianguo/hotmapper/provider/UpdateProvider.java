@@ -11,7 +11,7 @@ import com.xianguo.hotmapper.util.FieldFilter;
 public class UpdateProvider extends Provider {
 	public String updateProvider(ParamMap<Object> obj) {
 		loadBean(obj);
-		Map<String, FieldValue> fieldsValue = FieldFilter.filterEmptyByMap(table.getFields(), t);
+		Map<String, FieldValue> fieldsValue = FieldFilter.filterNULLByMap(table.getFields(), t);
 		String sql = Sql.SQL(
 				Sql.UPDATE(table.getName()),
 				Sql.SET(fieldsValue),
