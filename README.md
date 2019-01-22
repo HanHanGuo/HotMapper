@@ -8,7 +8,6 @@
       此注解打在你的实体类class上，值为你实体类对应的字段风格，此注解不是必须的，如果HotMapper找不到此注解或默认没有风格，值类型为AnalysusTypeEnmu的枚举类型,
     此注解会帮你推断数据库字段名称
     对应的值有
-    ```Java
     /**
      * 首字母大写驼峰
      */
@@ -41,7 +40,6 @@
      * 没有风格
      */
     NONE;
-    ```
   ## @Id
       此注解打在你的实体类字段上，HotMapper会把打上此注解的字段认为id，此注解不是必须的，如果找不到此注解HotMapper会自动推断你的id,
     推断方式为（把实体类字段名称转为小写，在判断是否等于id）.
@@ -52,7 +50,6 @@
       此注解打在你的实体类字段上，此注解不是必须的，值为查询表时该字段的条件操作符，值是一个SymbolEnmu的枚举类型
       如果注解值为LIKE，HotMapper会在查询，更新，删除时在字段值两边加上%。
       对应的值有
-      ```Java
         /**
          * 等于
          */
@@ -77,12 +74,10 @@
          * 小于等于
          */
         LESS_EQUAL;
-      ```
   ## @OrderBy
       此注解打在你的实体类字段上，此注解不是必须的，此注解的值是一个OrderByEnmu
     类型的枚举
     对应的的值为
-      ```Java
       /**
     	 * 正序
     	 */
@@ -91,7 +86,6 @@
     	 * 倒叙
     	 */
     	DESC;
-      ```
   ## @HotTransient
       此注解打在你的实体类字段上，此注解不是必须的，此注解不需要值，打上此注解
     的字段会被HotMapper忽略，你可以在实体类和数据库无关的字段打上此注解。
@@ -106,25 +100,20 @@
 ## 框架搭建教程
   ## DAO
     在你的Dao目录下新建一个Dao接口，此接口必须继承HotDao<T>,HotDao的T为当前dao对应的实体
-    ```Java
     public interface testDao extends HotDao<bean> {
 
     }
-    ```
   ## Service
     在你的service目录下新建一个Service接口，此接口必须继承HotService<T>,HotService的T为
     当前对应的实体
-    ```Java
     public interface testService extends HotService<bean> {
 
     }
-    ```
   ## ServiceImpl
     在你的service目录下新建一个ServiceImpl实现，此实现必须继承HotServiceImpl<T,D>,HotService的T为
     当前实现对应的实体,D为当前实现对应的Dao接口，并且实现getDao接口，getDao需要你自己创建当前实现对应
     的Dao，一般用Spring的Autowired
 
-    ```Java
     @Service
     public class test extends HotServiceImpl<com.yrsoft.entity.test,aaaDao> {
 
@@ -136,7 +125,6 @@
     		return dao;
     	}
     }
-    ```
 ## 最后
   你已经介入了HotMapper可以愉快的调用你创建的ServiceImpl里面的所有增删改查方法啦，HotMapper
   也对PageHelper做了处理，可以完美支持，此框架希望能大幅度减少大家的重复性代码工作。
