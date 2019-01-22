@@ -115,10 +115,10 @@
   ## ServiceImpl
     在你的service目录下新建一个ServiceImpl实现，此实现必须继承HotServiceImpl<T,D>,HotService的T为
     当前实现对应的实体,D为当前实现对应的Dao接口，并且实现getDao接口，getDao需要你自己创建当前实现对应
-    的Dao，一般用Spring的Autowired
+    的Dao，一般用Spring的Autowired,并接入你创建的对应Service接口
 
     @Service
-    public class test extends HotServiceImpl<com.yrsoft.entity.test,aaaDao> {
+    public class test extends HotServiceImpl<com.yrsoft.entity.test,aaaDao> implements testService {
 
     	@Autowired
     	aaaDao dao;
