@@ -2,14 +2,12 @@ package com.xianguo.hotmapper.provider;
 
 import java.util.Map;
 
-import org.apache.ibatis.binding.MapperMethod.ParamMap;
-
 import com.xianguo.hotmapper.bean.FieldValue;
 import com.xianguo.hotmapper.sql.Sql;
 import com.xianguo.hotmapper.util.FieldFilter;
 
 public class UpdateProvider extends Provider {
-	public String updateProvider(ParamMap<Object> obj) {
+	public String updateProvider(Object obj) {
 		loadBean(obj);
 		Map<String, FieldValue> fieldsValue = FieldFilter.filterNULLByMap(table.getFields(), t);
 		String sql = Sql.SQL(

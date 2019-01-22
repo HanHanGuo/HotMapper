@@ -1,12 +1,10 @@
 package com.xianguo.hotmapper.provider;
 
-import org.apache.ibatis.binding.MapperMethod.ParamMap;
-
 import com.xianguo.hotmapper.sql.Sql;
 
 public class SelectByIdProvider extends Provider {
 	
-	public String selectByIdProvider(ParamMap<Object> obj) {
+	public String selectByIdProvider(Object obj) {
 		loadId(obj);
 		String sql = Sql.SQL(
 				Sql.SELECT(table.getFieldsIncludeId()), 

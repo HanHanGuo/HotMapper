@@ -2,15 +2,13 @@ package com.xianguo.hotmapper.provider;
 
 import java.util.Map;
 
-import org.apache.ibatis.binding.MapperMethod.ParamMap;
-
 import com.xianguo.hotmapper.bean.FieldValue;
 import com.xianguo.hotmapper.sql.Sql;
 import com.xianguo.hotmapper.util.FieldFilter;
 
 public class SaveProvider extends Provider {
 	
-	public String saveProvider(ParamMap<Object> obj) {
+	public String saveProvider(Object obj) {
 		loadBean(obj);
 		Map<String, FieldValue> fieldsValue = FieldFilter.filterEmptyByMap(table.getFieldsIncludeId(), t);
 		

@@ -10,7 +10,7 @@ import com.xianguo.hotmapper.util.FieldFilter;
 
 public class DeleteProvider extends Provider {
 	
-	public String deleteProvider(ParamMap<Object> obj) {
+	public String deleteProvider(Object obj) {
 		loadBean(obj);
 		Map<String, FieldValue> fields = FieldFilter.filterEmptyByMap(table.getFieldsIncludeId(), t);
 		String sql = Sql.SQL(

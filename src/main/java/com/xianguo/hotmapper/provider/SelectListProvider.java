@@ -2,8 +2,6 @@ package com.xianguo.hotmapper.provider;
 
 import java.util.Map;
 
-import org.apache.ibatis.binding.MapperMethod.ParamMap;
-
 import com.xianguo.hotmapper.bean.FieldValue;
 import com.xianguo.hotmapper.sql.Sql;
 import com.xianguo.hotmapper.util.FieldFilter;
@@ -13,9 +11,9 @@ import com.xianguo.hotmapper.util.FieldFilter;
  * @author:鲜果
  * @date:2019年1月21日
  */
-public class SelectListProvider extends Provider {
-
-    public String selectListProvider(ParamMap<Object> obj) {
+public class SelectListProvider extends Provider{
+	
+    public String selectListProvider(Object obj) {
     	loadBean(obj);//加载参数
     	Map<String, FieldValue> fields = FieldFilter.filterEmptyByMap(table.getFieldsIncludeId(), t);
     	String sql = Sql.SQL(

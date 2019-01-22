@@ -4,10 +4,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.github.pagehelper.Page;
 import com.xianguo.hotmapper.bean.Table;
 import com.xianguo.hotmapper.container.Container;
 import com.xianguo.hotmapper.dao.HotDao;
@@ -57,26 +59,44 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
     
     
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> selectList(T t) {
-		return PreparedStatementUtil.convertBeanByList(classes, getDao().selectList(t, table,classes), table);
+		return selectList(t,false,0);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> selectList(T t,Boolean openRelation) {
 		if(openRelation) {
-			return Relation(PreparedStatementUtil.convertBeanByList(classes, getDao().selectList(t, table,classes), table),1);
+			return selectList(t,true,1);
 		}else {
 			return selectList(t);
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> selectList(T t,Boolean openRelation,Integer hierarchy) {
-		if(openRelation) {
-			return Relation(PreparedStatementUtil.convertBeanByList(classes, getDao().selectList(t, table,classes), table),hierarchy);
+		Object obj = getDao().selectList(t, table,classes);
+		if(obj instanceof Page<?>) {
+			Page<T> page = (Page<T>)obj;
+			List<T> beans = PreparedStatementUtil.convertBeanByList(classes, (List<Map<String,Object>>)obj, table);
+			page.clear();
+			for(T bean : beans) {
+				page.add(bean);
+			}
+			if(openRelation) {
+				return Relation(page,hierarchy);
+			}else {
+				return page;
+			}
 		}else {
-			return selectList(t);
+			if(openRelation) {
+				return Relation(PreparedStatementUtil.convertBeanByList(classes, (List<Map<String,Object>>)obj, table),hierarchy);
+			}else {
+				return PreparedStatementUtil.convertBeanByList(classes, (List<Map<String,Object>>)obj, table);
+			}
 		}
 	}
 

@@ -8,7 +8,7 @@ import com.xianguo.hotmapper.util.FieldFilter;
 
 public class DeleteByIdProvider extends Provider {
 	
-	public String deleteByIdProvider(ParamMap<Object> obj) {
+	public String deleteByIdProvider(Object obj) {
 		loadId(obj);
 		FieldValue fieldValue = FieldFilter.packingField(table.getId(), t);
 		String sql = Sql.SQL(
