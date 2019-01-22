@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -206,6 +207,11 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
 							valField.setAccessible(true);
 							if(valField != null) {
 								Object objBean = valField.get(value);
+								if(objBean != null && objBean instanceof String) {//校验是否为空字符串
+									if(StringUtils.isEmpty((String)objBean)) {
+										return t;
+									}
+								}
 								if(objBean != null) {
 									parField.set(par, objBean);
 									hierarchy--;
