@@ -1,5 +1,6 @@
 package com.xianguo.hotmapper.sql;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -121,7 +122,7 @@ public class Sql {
 		return where;
 	}
 	
-	public static StringBuilder SET(Map<String, FieldValue> fields) {
+	public static StringBuilder SET(Map<String, FieldValue> fields,String par) {
 		if(fields.keySet().size()<=0) {
 			return new StringBuilder();
 		}
@@ -131,9 +132,9 @@ public class Sql {
 		for(String key : fields.keySet()) {
 			if(!fields.get(key).getField().getIsCondition()) {
 				if(StringUtils.isEmpty(sb.toString())) {
-					sb.append(fields.get(key).getField().getDataBase()).append(" = ").append("#{").append(fields.get(key).getField().getField()).append("}");
+					sb.append(fields.get(key).getField().getDataBase()).append(" = ").append("#{").append(par).append(".").append(fields.get(key).getField().getField()).append("}");
 				}else {
-					sb.append(",").append(fields.get(key).getField().getDataBase()).append(" = ").append("#{").append(fields.get(key).getField().getField()).append("}");
+					sb.append(",").append(fields.get(key).getField().getDataBase()).append(" = ").append("#{").append(par).append(".").append(fields.get(key).getField().getField()).append("}");
 				}
 			}
 		}
@@ -175,7 +176,7 @@ public class Sql {
 	}
 	
 	@SuppressWarnings("unused")
-	public static StringBuilder VALUES(Map<String, FieldValue> fields) {
+	public static StringBuilder VALUES(Map<String, FieldValue> fields,String par) {
 		StringBuilder sb = new StringBuilder();
 		StringBuilder head = new StringBuilder();
 		head.append("values ");
@@ -183,9 +184,9 @@ public class Sql {
 		for(String key : fields.keySet()) {
 			if(!fields.get(key).getField().getIsCondition()) {
 				if(StringUtils.isEmpty(sb.toString())) {
-					sb.append("#{").append(fields.get(key).getField().getField()).append("}");
+					sb.append("#{").append(par).append(".").append(fields.get(key).getField().getField()).append("}");
 				}else {
-					sb.append("#{").append(fields.get(key).getField().getField()).append("}");
+					sb.append("#{").append(par).append(".").append(fields.get(key).getField().getField()).append("}");
 				}
 			}
 		}
@@ -200,6 +201,24 @@ public class Sql {
 		sb.append(",");
 		sb.append(two);
 		return sb;
+	}
+	
+	public static StringBuilder ORDERBY(List<Field> orderBys) {
+		if(orderBys == null || orderBys.size()>0) {
+			return new StringBuilder();
+		}
+		StringBuilder sb = new StringBuilder();
+		StringBuilder head = new StringBuilder();
+		for(Field field : orderBys) {
+			if(StringUtils.isEmpty(sb.toString())) {
+				sb.append(field.getDataBase()).append(" ").append(field.getOrderByEnmu().keyword());
+			}else {
+				sb.append(",").append(field.getDataBase()).append(" ").append(field.getOrderByEnmu().keyword());
+			}
+		}
+		head.append("order by ");
+		head.append(sb);
+		return head;
 	}
 	
 	public static StringBuilder LIMIT(Integer one) {

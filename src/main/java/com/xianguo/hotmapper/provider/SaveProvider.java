@@ -14,7 +14,7 @@ public class SaveProvider extends Provider {
 		
 		String sql = Sql.SQL(
 				Sql.INSERT(table.getName(), fieldsValue),
-				Sql.VALUES(fieldsValue)
+				Sql.VALUES(fieldsValue,"bean")
 				);
 		return sql;
 	}

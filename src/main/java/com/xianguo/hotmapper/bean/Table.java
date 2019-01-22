@@ -1,5 +1,6 @@
 package com.xianguo.hotmapper.bean;
 
+import java.util.List;
 import java.util.Map;
 
 import lombok.Data;
@@ -22,4 +23,9 @@ public class Table{
 	 * 字段包括id
 	 */
 	private Map<String, Field> fieldsIncludeId;
+	
+	/**
+	 * 排序字段
+	 */
+	private List<Field> orderByFields;
 }

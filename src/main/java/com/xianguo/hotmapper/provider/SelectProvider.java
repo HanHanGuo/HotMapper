@@ -15,6 +15,7 @@ public class SelectProvider extends Provider {
 				Sql.SELECT(table.getFieldsIncludeId()), 
 				Sql.FROM(table.getName()), 
 				Sql.WHERE(fields,"bean"),
+				Sql.ORDERBY(table.getOrderByFields()),
 				Sql.LIMIT(1)
 				);
     	return sql;

@@ -1,7 +1,9 @@
 package com.xianguo.hotmapper.container;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -11,11 +13,12 @@ import com.xianguo.hotmapper.annotation.AnalysisType;
 import com.xianguo.hotmapper.annotation.Condition;
 import com.xianguo.hotmapper.annotation.HotTransient;
 import com.xianguo.hotmapper.annotation.Id;
+import com.xianguo.hotmapper.annotation.OrderBy;
 import com.xianguo.hotmapper.annotation.Relation;
 import com.xianguo.hotmapper.annotation.Symbol;
 import com.xianguo.hotmapper.bean.Table;
 import com.xianguo.hotmapper.enums.AnalysusTypeEnmu;
-import com.xianguo.hotmapper.enums.SymbolEnmu;
+import com.xianguo.hotmapper.enums.OrderByEnmu;
 import com.xianguo.hotmapper.util.FieldNameUtil;
 
 public class Container {
@@ -48,6 +51,7 @@ public class Container {
 			com.xianguo.hotmapper.bean.Field idByAnn = null;
 			com.xianguo.hotmapper.bean.Field idByName = null;
 			Map<String, com.xianguo.hotmapper.bean.Field> beanField = new HashMap<>();
+			List<com.xianguo.hotmapper.bean.Field> orderBys = new ArrayList<>();//排序字段
 			for(Field field : fields) {
 				if(field.getAnnotation(HotTransient.class) == null && field.getAnnotation(Relation.class) == null && field.getAnnotation(Relation.class) == null) {
 					com.xianguo.hotmapper.annotation.Field databaseFieldNameAnn = field.getAnnotation(com.xianguo.hotmapper.annotation.Field.class);
@@ -68,6 +72,11 @@ public class Container {
 					if(field.getAnnotation(Condition.class) != null) {
 						BeanFieldSave.setIsCondition(true);
 					}
+					OrderBy orderBy = null;
+					if((orderBy = field.getAnnotation(OrderBy.class)) != null) {
+						BeanFieldSave.setOrderByEnmu(orderBy.value());
+						orderBys.add(BeanFieldSave);
+					}
 					beanField.put(field.getName(), BeanFieldSave);
 				}
 			}
@@ -82,6 +91,7 @@ public class Container {
 			Map<String,com.xianguo.hotmapper.bean.Field> mapCopy = beanField.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 			mapCopy.remove(table.getId().getField());
 			table.setFields(mapCopy);
+			table.setOrderByFields(orderBys);//放入需要排序的字段
 			tables.put(table.getName(), table);
 			return table;
 		}

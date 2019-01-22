@@ -10,6 +10,7 @@ public class SelectByIdProvider extends Provider {
 				Sql.SELECT(table.getFieldsIncludeId()), 
 				Sql.FROM(table.getName()),
 				Sql.WHERE(table.getId(),"id",false),
+				Sql.ORDERBY(table.getOrderByFields()),
 				Sql.LIMIT(1));
 		return sql;
 	}

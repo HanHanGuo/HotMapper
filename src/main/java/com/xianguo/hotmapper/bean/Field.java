@@ -1,5 +1,6 @@
 package com.xianguo.hotmapper.bean;
 
+import com.xianguo.hotmapper.enums.OrderByEnmu;
 import com.xianguo.hotmapper.enums.SymbolEnmu;
 
 import lombok.Data;
@@ -11,6 +12,7 @@ public class Field {
 	private Class<?> classType;
 	private SymbolEnmu Symbol;
 	private Boolean isCondition;
+	private OrderByEnmu orderByEnmu;//排序
 	
 	public Field() {
 		isCondition = false;//默认是字段

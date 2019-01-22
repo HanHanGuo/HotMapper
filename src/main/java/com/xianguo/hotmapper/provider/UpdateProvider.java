@@ -12,7 +12,7 @@ public class UpdateProvider extends Provider {
 		Map<String, FieldValue> fieldsValue = FieldFilter.filterNULLByMap(table.getFields(), t);
 		String sql = Sql.SQL(
 				Sql.UPDATE(table.getName()),
-				Sql.SET(fieldsValue),
+				Sql.SET(fieldsValue,"bean"),
 				Sql.WHERE(table.getId(),"bean")
 				);
 		return sql;

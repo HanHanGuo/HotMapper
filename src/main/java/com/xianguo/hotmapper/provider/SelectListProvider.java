@@ -19,7 +19,8 @@ public class SelectListProvider extends Provider{
     	String sql = Sql.SQL(
 				Sql.SELECT(table.getFieldsIncludeId()), 
 				Sql.FROM(table.getName()), 
-				Sql.WHERE(fields,"bean")
+				Sql.WHERE(fields,"bean"),
+				Sql.ORDERBY(table.getOrderByFields())
 				);
     	return sql;
     }
