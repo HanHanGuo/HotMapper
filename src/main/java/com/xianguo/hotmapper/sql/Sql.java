@@ -186,7 +186,7 @@ public class Sql {
 				if(StringUtils.isEmpty(sb.toString())) {
 					sb.append("#{").append(par).append(".").append(fields.get(key).getField().getField()).append("}");
 				}else {
-					sb.append("#{").append(par).append(".").append(fields.get(key).getField().getField()).append("}");
+					sb.append(",").append("#{").append(par).append(".").append(fields.get(key).getField().getField()).append("}");
 				}
 			}
 		}
@@ -204,7 +204,7 @@ public class Sql {
 	}
 	
 	public static StringBuilder ORDERBY(List<Field> orderBys) {
-		if(orderBys == null || orderBys.size()>0) {
+		if(orderBys == null || orderBys.size()<=0) {
 			return new StringBuilder();
 		}
 		StringBuilder sb = new StringBuilder();

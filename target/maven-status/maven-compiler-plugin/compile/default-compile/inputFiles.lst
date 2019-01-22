@@ -28,7 +28,9 @@ D:\workspce\idian\hotmapper\src\main\java\com\xianguo\hotmapper\service\SaveServ
 D:\workspce\idian\hotmapper\src\main\java\com\xianguo\hotmapper\bean\Field.java
 D:\workspce\idian\hotmapper\src\main\java\com\xianguo\hotmapper\enums\ClassTypeEnmu.java
 D:\workspce\idian\hotmapper\src\main\java\com\xianguo\hotmapper\bean\Table.java
+D:\workspce\idian\hotmapper\src\main\java\com\xianguo\hotmapper\annotation\OrderBy.java
 D:\workspce\idian\hotmapper\src\main\java\com\xianguo\hotmapper\provider\SaveProvider.java
+D:\workspce\idian\hotmapper\src\main\java\com\xianguo\hotmapper\enums\OrderByEnmu.java
 D:\workspce\idian\hotmapper\src\main\java\com\xianguo\hotmapper\annotation\Relation.java
 D:\workspce\idian\hotmapper\src\main\java\com\xianguo\hotmapper\interfaces\SymbolInterface.java
 D:\workspce\idian\hotmapper\src\main\java\com\xianguo\hotmapper\provider\DeleteProvider.java
