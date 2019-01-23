@@ -41,7 +41,7 @@ public interface SelectService<T> {
 	 * @return
 	 * T
 	 */
-	public T select(T t,Boolean openRelation,Integer hierarchy);
+	public T select(T t,Boolean openRelation,int hierarchy);
 	
 	/**
 	 * 根据条件查询所有
@@ -84,7 +84,7 @@ public interface SelectService<T> {
 	 * @return
 	 * List<T>
 	 */
-	public List<T> selectList(T t,Boolean openRelation,Integer hierarchy);
+	public List<T> selectList(T t,Boolean openRelation,int hierarchy);
 	
 	/**
 	 * 更具id查询实体并处理1层关系
@@ -107,5 +107,5 @@ public interface SelectService<T> {
 	 * @return
 	 * T
 	 */
-	public T selectById(String id,Boolean openRelation,Integer hierarchy);
+	public T selectById(String id,Boolean openRelation,int hierarchy);
 }

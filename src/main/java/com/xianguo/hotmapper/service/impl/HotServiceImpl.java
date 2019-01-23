@@ -50,7 +50,7 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
     }
 
     @Override
-	public T select(T t,Boolean openRelation,Integer hierarchy) {
+	public T select(T t,Boolean openRelation,int hierarchy) {
     	if(openRelation) {
     		return Relation(PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table), hierarchy) ;
     	}else {
@@ -59,14 +59,11 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
     }
     
     
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> selectList(T t) {
 		return selectList(t,false,0);
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> selectList(T t,Boolean openRelation) {
 		if(openRelation) {
@@ -78,7 +75,7 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<T> selectList(T t,Boolean openRelation,Integer hierarchy) {
+	public List<T> selectList(T t,Boolean openRelation,int hierarchy) {
 		Object obj = getDao().selectList(t, table,classes);
 		if(obj instanceof Page<?>) {
 			Page<T> page = (Page<T>)obj;
@@ -116,7 +113,7 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
 	}
 	
 	@Override
-	public T selectById(String id,Boolean openRelation,Integer hierarchy) {
+	public T selectById(String id,Boolean openRelation,int hierarchy) {
 		if(openRelation) {
 			return Relation(PreparedStatementUtil.convertBeanByMap(classes,getDao().selectById(id, table,classes),table),hierarchy);
 		}else {
@@ -187,11 +184,12 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
 	
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public List<T> Relation(List<T> t,Integer hierarchy) {
+	public List<T> Relation(List<T> t,int hierarchy) {
 		try {
 			if(hierarchy <= 0) {
 				return t;
 			}
+			hierarchy--;
 			for(T value : t) {
 				for(Field field : classes.getDeclaredFields()) {
 					com.xianguo.hotmapper.annotation.Relation relation = null;
@@ -209,12 +207,11 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
 								Object objBean = valField.get(value);
 								if(objBean != null && objBean instanceof String) {//校验是否为空字符串
 									if(StringUtils.isEmpty((String)objBean)) {
-										return t;
+										continue;
 									}
 								}
 								if(objBean != null) {
 									parField.set(par, objBean);
-									hierarchy--;
 	
 									if(field.getType().equals(List.class)) {
 										List<Object> valueBean = telationService.selectList(par,true,hierarchy);
