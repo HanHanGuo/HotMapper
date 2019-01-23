@@ -102,7 +102,7 @@ public class Sql {
 		where.append("where ");
 		for(String key : fields.keySet()) {
 			if(!StringUtils.isEmpty(sb.toString())) {
-				sb.append(" and");
+				sb.append(" and ");
 			}
 			sb.append(fields.get(key).getField().getDataBase()).append(fields.get(key).getField().getSymbol().getSymbol(new SymbolInterface() {
 				
