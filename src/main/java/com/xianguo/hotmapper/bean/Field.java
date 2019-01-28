@@ -16,7 +16,7 @@ public class Field {
 	
 	public Field() {
 		isCondition = false;//默认是字段
-		Symbol = Symbol.EQUAL;//默认等于
+		Symbol = SymbolEnmu.EQUAL;//默认等于
 	}
 	
 	public Field(String dataBase,String field,Class<?> classType) {
@@ -24,6 +24,6 @@ public class Field {
 		this.field = field;
 		this.classType = classType;
 		isCondition = false;//默认是字段
-		Symbol = Symbol.EQUAL;//默认等于
+		Symbol = SymbolEnmu.EQUAL;//默认等于
 	}
 }

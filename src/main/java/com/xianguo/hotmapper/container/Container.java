@@ -18,7 +18,6 @@ import com.xianguo.hotmapper.annotation.Relation;
 import com.xianguo.hotmapper.annotation.Symbol;
 import com.xianguo.hotmapper.bean.Table;
 import com.xianguo.hotmapper.enums.AnalysusTypeEnmu;
-import com.xianguo.hotmapper.enums.OrderByEnmu;
 import com.xianguo.hotmapper.util.FieldNameUtil;
 
 public class Container {

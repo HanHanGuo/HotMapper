@@ -1,7 +1,5 @@
 package com.xianguo.hotmapper.provider;
 
-import org.apache.ibatis.binding.MapperMethod.ParamMap;
-
 import com.xianguo.hotmapper.bean.FieldValue;
 import com.xianguo.hotmapper.sql.Sql;
 import com.xianguo.hotmapper.util.FieldFilter;
