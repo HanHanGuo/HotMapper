@@ -175,7 +175,6 @@ public class Sql {
 		return head;
 	}
 	
-	@SuppressWarnings("unused")
 	public static StringBuilder VALUES(Map<String, FieldValue> fields,String par) {
 		StringBuilder sb = new StringBuilder();
 		StringBuilder head = new StringBuilder();
