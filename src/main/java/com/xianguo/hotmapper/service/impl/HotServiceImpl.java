@@ -1,49 +1,36 @@
 package com.xianguo.hotmapper.service.impl;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.github.pagehelper.Page;
-import com.xianguo.hotmapper.bean.Table;
-import com.xianguo.hotmapper.container.Container;
 import com.xianguo.hotmapper.dao.HotDao;
 import com.xianguo.hotmapper.service.HotService;
 import com.xianguo.hotmapper.util.PreparedStatementUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 增删改查以及条件处理实现类
+ * @author 鲜果
+ * @date 2019年1月30日上午10:16:04
+ * @param <T>
+ * @param <DAO>
+ */
 @Slf4j
-public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotService<T> {
-	
-	public Class<T> classes;
-	
-	public Table table;
+public abstract class HotServiceImpl<T,DAO extends HotDao<T>> extends SmallHotServiceImpl<T,DAO> implements HotService<T> {
 
 	@Autowired
 	private BeanFactory beanFactory;
-	
-    @SuppressWarnings("unchecked")
-	protected HotServiceImpl() {
-    	classes = (Class <T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-    	table = Container.load(classes);
-    }
-    
-    @Override
-	public T select(T t) {
-    	return PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table);
-    }
 
     @Override
 	public T select(T t,Boolean openRelation) {
     	if(openRelation) {
-    		return Relation(PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table), 1) ;
+    		return SelectRelation(PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table), 1) ;
     	}else {
     		return PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table);
     	}
@@ -52,61 +39,36 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
     @Override
 	public T select(T t,Boolean openRelation,int hierarchy) {
     	if(openRelation) {
-    		return Relation(PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table), hierarchy) ;
+    		return SelectRelation(PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table), hierarchy) ;
     	}else {
     		return PreparedStatementUtil.convertBeanByMap(classes,getDao().select(t, table, classes),table);
     	}
     }
     
-    
-	@Override
-	public List<T> selectList(T t) {
-		return selectList(t,false,0);
-	}
-	
 	@Override
 	public List<T> selectList(T t,Boolean openRelation) {
 		if(openRelation) {
-			return selectList(t,true,1);
+			List<T> list = selectList(t);
+			return SelectRelation(list,1);
 		}else {
 			return selectList(t);
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<T> selectList(T t,Boolean openRelation,int hierarchy) {
-		Object obj = getDao().selectList(t, table,classes);
-		if(obj instanceof Page<?>) {
-			Page<T> page = (Page<T>)obj;
-			List<T> beans = PreparedStatementUtil.convertBeanByList(classes, (List<Map<String,Object>>)obj, table);
-			page.clear();
-			for(T bean : beans) {
-				page.add(bean);
-			}
-			if(openRelation) {
-				return Relation(page,hierarchy);
-			}else {
-				return page;
-			}
+		if(openRelation) {
+			List<T> list = selectList(t);
+			return SelectRelation(list,hierarchy);
 		}else {
-			if(openRelation) {
-				return Relation(PreparedStatementUtil.convertBeanByList(classes, (List<Map<String,Object>>)obj, table),hierarchy);
-			}else {
-				return PreparedStatementUtil.convertBeanByList(classes, (List<Map<String,Object>>)obj, table);
-			}
+			return selectList(t);
 		}
-	}
-
-	@Override
-	public T selectById(String id) {
-		return PreparedStatementUtil.convertBeanByMap(classes,getDao().selectById(id, table,classes),table);
 	}
 	
 	@Override
 	public T selectById(String id,Boolean openRelation) {
 		if(openRelation) {
-			return Relation(PreparedStatementUtil.convertBeanByMap(classes,getDao().selectById(id, table,classes),table),1);
+			return SelectRelation(PreparedStatementUtil.convertBeanByMap(classes,getDao().selectById(id, table,classes),table),1);
 		}else {
 			return selectById(id);
 		}
@@ -115,66 +77,28 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
 	@Override
 	public T selectById(String id,Boolean openRelation,int hierarchy) {
 		if(openRelation) {
-			return Relation(PreparedStatementUtil.convertBeanByMap(classes,getDao().selectById(id, table,classes),table),hierarchy);
+			return SelectRelation(PreparedStatementUtil.convertBeanByMap(classes,getDao().selectById(id, table,classes),table),hierarchy);
 		}else {
 			return selectById(id);
 		}
 	}
-
-	@Override
-	public Integer deleteById(String id) {
-		return getDao().deleteById(id, table,classes);
-	}
-
-	@Override
-	public Integer deleteByIds(List<String> ids) {
-		Integer sum = 0;
-		for(String id : ids) {
-			sum += getDao().deleteById(id, table, classes);
-		}
-		return sum;
-	}
-
-	@Override
-	public Integer delete(T t) {
-		return getDao().delete(t, table,classes);
-	}
-
-	@Override
-	public Integer save(T t) {
-		return getDao().save(t, table,classes);
-	}
 	
-	@Override
-	public Integer save(List<T> t) {
-		Integer sum = 0;
-		for(T bean : t) {
-			sum += getDao().save(bean, table, classes);
-		}
-		return sum;
-	}
-
-	@Override
-	public Integer update(T t) {
-		return getDao().update(t, table,classes);
-	}
-
-	@Override
-	public Integer update(List<T> t) {
-		Integer sum = 0;
-		for(T bean : t) {
-			sum += getDao().update(bean, table, classes);
-		}
-		return sum;
-	}
-	
-	public T Relation(T t,Integer hierarchy) {
+	/**
+	 * 查询关系处理
+	 * @author 鲜果
+	 * @date 2019年1月30日上午10:12:07
+	 * @param t 需要处理的实体
+	 * @param hierarchy 需要传播的层数
+	 * @return
+	 * T
+	 */
+	public T SelectRelation(T t,Integer hierarchy) {
 		if(t == null) {
 			return t;
 		}
 		List<T> list = new ArrayList<>();
 		list.add(t);
-		list = Relation(list,hierarchy);
+		list = SelectRelation(list,hierarchy);
 		if(list.size() > 0) {
 			return list.get(0);
 		}else {
@@ -182,15 +106,24 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
 		}
 	}
 	
-
+	/**
+	 * 查询关系处理
+	 * @author 鲜果
+	 * @date 2019年1月30日上午10:12:33
+	 * @param t 要处理关系的集合
+	 * @param hierarchy 要传播的层数
+	 * @return
+	 * List<T>
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public List<T> Relation(List<T> t,int hierarchy) {
+	public List<T> SelectRelation(List<T> t,int hierarchy) {
 		try {
 			if(hierarchy <= 0) {
 				return t;
 			}
 			hierarchy--;
 			for(T value : t) {
+				Class<?> classes = value.getClass();
 				for(Field field : classes.getDeclaredFields()) {
 					com.xianguo.hotmapper.annotation.Relation relation = null;
 					if((relation = field.getAnnotation(com.xianguo.hotmapper.annotation.Relation.class))!=null) {
@@ -236,7 +169,4 @@ public abstract class HotServiceImpl<T,DAO extends HotDao<T>> implements HotServ
 			return t;
 		}
 	}
-	
-	public abstract DAO getDao();
-	
 }

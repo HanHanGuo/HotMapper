@@ -20,9 +20,26 @@ import com.xianguo.hotmapper.bean.Table;
 import com.xianguo.hotmapper.enums.AnalysusTypeEnmu;
 import com.xianguo.hotmapper.util.FieldNameUtil;
 
+/**
+ * hotmapper容器
+ * @author 鲜果
+ * @date 2019年1月30日上午10:19:36
+ */
 public class Container {
+	
+	/**
+	 * 容器
+	 */
 	public static Map<String, Table> tables = new HashMap<String, Table>();
 	
+	/**
+	 * 加载下类信息，以及注解信息
+	 * @author 鲜果
+	 * @date 2019年1月30日上午10:19:52
+	 * @param classes
+	 * @return
+	 * Table
+	 */
 	public static Table load(Class<?> classes) {
 		synchronized (tables) {
 			com.xianguo.hotmapper.annotation.Table tableName =classes.getAnnotation(com.xianguo.hotmapper.annotation.Table.class);
