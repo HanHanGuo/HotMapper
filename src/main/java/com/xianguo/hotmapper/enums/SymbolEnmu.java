@@ -2,6 +2,11 @@ package com.xianguo.hotmapper.enums;
 
 import com.xianguo.hotmapper.interfaces.SymbolInterface;
 
+/**
+ * 数据库查询操作符
+ * @author 鲜果
+ * @date 2019年1月31日上午11:29:23
+ */
 public enum SymbolEnmu {
 	/**
 	 * 等于
