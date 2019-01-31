@@ -7,6 +7,11 @@ import java.lang.annotation.Target;
 
 import com.xianguo.hotmapper.enums.OrderByEnmu;
 
+/**
+ * 数据库排序注解，查询时更具当前注解排序。
+ * @author 鲜果
+ * @date 2019年1月31日上午11:23:22
+ */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface OrderBy {
