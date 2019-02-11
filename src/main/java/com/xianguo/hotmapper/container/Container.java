@@ -67,9 +67,10 @@ public class Container {
 			com.xianguo.hotmapper.bean.Field idByAnn = null;
 			com.xianguo.hotmapper.bean.Field idByName = null;
 			Map<String, com.xianguo.hotmapper.bean.Field> beanField = new HashMap<>();
+			Map<String, com.xianguo.hotmapper.bean.Relation> relations = new HashMap<>();//关系字段map
 			List<com.xianguo.hotmapper.bean.Field> orderBys = new ArrayList<>();//排序字段
 			for(Field field : fields) {
-				if(field.getAnnotation(HotTransient.class) == null && field.getAnnotation(Relation.class) == null && field.getAnnotation(Relation.class) == null) {
+				if(field.getAnnotation(HotTransient.class) == null && field.getAnnotation(Relation.class) == null && field.getAnnotation(Relation.class) == null) {//处理数据库字段
 					com.xianguo.hotmapper.annotation.Field databaseFieldNameAnn = field.getAnnotation(com.xianguo.hotmapper.annotation.Field.class);
 					if(idByAnn == null) {
 						Id id = field.getAnnotation(Id.class);
@@ -95,6 +96,16 @@ public class Container {
 					}
 					beanField.put(field.getName(), BeanFieldSave);
 				}
+				Relation relation = null;
+				if((relation = field.getAnnotation(Relation.class)) != null) {//处理关系字段
+					com.xianguo.hotmapper.bean.Relation relationBean = new com.xianguo.hotmapper.bean.Relation();
+					relationBean.setService(relation.service());
+					relationBean.setPk(relation.pk());
+					relationBean.setFk(relation.fk());
+					relationBean.setFieldName(field.getName());
+					relationBean.setClassType(field.getType());
+					relations.put(field.getName(), relationBean);
+				}
 			}
 			table.setFieldsIncludeId(beanField);
 			if(idByAnn != null) {
@@ -108,6 +119,7 @@ public class Container {
 			mapCopy.remove(table.getId().getField());
 			table.setFields(mapCopy);
 			table.setOrderByFields(orderBys);//放入需要排序的字段
+			table.setRelationFields(relations);//存入关系字段
 			tables.put(table.getName(), table);
 			return table;
 		}

@@ -23,6 +23,10 @@ public class Table{
 	 * 字段包括id
 	 */
 	private Map<String, Field> fieldsIncludeId;
+	/**
+	 * 关系字段
+	 */
+	private Map<String, Relation> relationFields;
 	
 	/**
 	 * 排序字段

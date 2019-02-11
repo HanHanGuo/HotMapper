@@ -1,5 +1,6 @@
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\service\impl\SmallHotServiceImpl.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\annotation\AnalysisType.java
+D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\bean\TempBean.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\service\SelectRelationService.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\annotation\HotTransient.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\bean\Field.java
@@ -9,7 +10,6 @@ D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\provider\UpdatePr
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\bean\Table.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\util\PreparedStatementUtil.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\provider\SelectByIdProvider.java
-D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\util\RelationUtil.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\enums\AnalysusTypeEnmu.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\service\SelectService.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\annotation\OrderBy.java

@@ -10,9 +10,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.xianguo.hotmapper.bean.Relation;
 import com.xianguo.hotmapper.bean.TempBean;
 import com.xianguo.hotmapper.dao.HotDao;
 import com.xianguo.hotmapper.service.HotService;
+import com.xianguo.hotmapper.util.MapUtil;
 import com.xianguo.hotmapper.util.PreparedStatementUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -34,18 +36,20 @@ public abstract class HotServiceImpl<T, DAO extends HotDao<T>> extends SmallHotS
 	@Override
 	public T select(T t, Boolean openRelation) {
 		if (openRelation) {
-			return SelectRelation(PreparedStatementUtil.convertBeanByMap(classes, getDao().select(t, table, classes), table), 1, new HashMap<>());
+			Map<String, List<TempBean>> temp = new HashMap<>();// 创建缓存
+			return select(t, 1, temp);
 		} else {
-			return PreparedStatementUtil.convertBeanByMap(classes, getDao().select(t, table, classes), table);
+			return select(t);
 		}
 	}
 
 	@Override
 	public T select(T t, Integer hierarchy) {
 		if (hierarchy > 0) {
-			return SelectRelation(PreparedStatementUtil.convertBeanByMap(classes, getDao().select(t, table, classes), table), hierarchy, new HashMap<>());
+			Map<String, List<TempBean>> temp = new HashMap<>();// 创建缓存
+			return select(t, hierarchy, temp);
 		} else {
-			return PreparedStatementUtil.convertBeanByMap(classes, getDao().select(t, table, classes), table);
+			return select(t);
 		}
 	}
 
@@ -69,11 +73,16 @@ public abstract class HotServiceImpl<T, DAO extends HotDao<T>> extends SmallHotS
 				list = new ArrayList<>();
 				temp.put(classes.getName(), list);
 			}
-			TempBean tempBean = new TempBean();
 			Map<String, Object> value = getDao().select(t, table, classes);
+			if (value == null) {
+				return null;
+			}
+			T bean = PreparedStatementUtil.convertBeanByMap(classes, value, table);
+			TempBean tempBean = new TempBean();// 记录缓存
 			tempBean.setValue(value);
+			tempBean.setBean(bean);
 			list.add(tempBean);
-			return SelectRelation(PreparedStatementUtil.convertBeanByMap(classes, value, table), hierarchy, temp);
+			return SelectRelation(bean, hierarchy, temp);
 		} else {
 			return select(t);
 		}
@@ -82,8 +91,8 @@ public abstract class HotServiceImpl<T, DAO extends HotDao<T>> extends SmallHotS
 	@Override
 	public List<T> selectList(T t, Boolean openRelation) {
 		if (openRelation) {
-			List<T> list = selectList(t);
-			return SelectRelation(list, 1, new HashMap<>());
+			Map<String, List<TempBean>> temp = new HashMap<>();// 创建缓存
+			return selectList(t, 1, temp);
 		} else {
 			return selectList(t);
 		}
@@ -92,8 +101,8 @@ public abstract class HotServiceImpl<T, DAO extends HotDao<T>> extends SmallHotS
 	@Override
 	public List<T> selectList(T t, Integer hierarchy) {
 		if (hierarchy > 0) {
-			List<T> list = selectList(t);
-			return SelectRelation(list, hierarchy, new HashMap<>());
+			Map<String, List<TempBean>> temp = new HashMap<>();// 创建缓存
+			return selectList(t, hierarchy, temp);
 		} else {
 			return selectList(t);
 		}
@@ -120,12 +129,21 @@ public abstract class HotServiceImpl<T, DAO extends HotDao<T>> extends SmallHotS
 				temp.put(classes.getName(), list);
 			}
 			List<Map<String, Object>> values = getDao().selectList(t, table, classes);
+			List<T> beans = PreparedStatementUtil.convertBeanByList(classes, values, table);
+			Integer index = 0;
 			for (Map<String, Object> value : values) {
 				TempBean tempBean = new TempBean();
 				tempBean.setValue(value);
-				list.add(tempBean);
+				tempBean.setBean(beans.get(index));
+				list.add(tempBean);// 放入集合，避免重复转换。
+				index++;
 			}
-			return SelectRelation(PreparedStatementUtil.convertBeanByList(classes, values, table), hierarchy, temp);
+			if(beans.size() > 0) {
+				TempBean tempBean = new TempBean();
+				tempBean.setValue(MapUtil.object2Map(t));
+				tempBean.setBean(beans);
+			}
+			return SelectRelation(beans, hierarchy, temp);
 		} else {
 			return selectList(t);
 		}
@@ -134,7 +152,8 @@ public abstract class HotServiceImpl<T, DAO extends HotDao<T>> extends SmallHotS
 	@Override
 	public T selectById(String id, Boolean openRelation) {
 		if (openRelation) {
-			return SelectRelation(PreparedStatementUtil.convertBeanByMap(classes, getDao().selectById(id, table, classes), table), 1, new HashMap<>());
+			Map<String, List<TempBean>> temp = new HashMap<>();// 创建缓存
+			return selectById(id, 1, temp);
 		} else {
 			return selectById(id);
 		}
@@ -143,7 +162,43 @@ public abstract class HotServiceImpl<T, DAO extends HotDao<T>> extends SmallHotS
 	@Override
 	public T selectById(String id, Integer hierarchy) {
 		if (hierarchy > 0) {
-			return SelectRelation(PreparedStatementUtil.convertBeanByMap(classes, getDao().selectById(id, table, classes), table), hierarchy, new HashMap<>());
+			Map<String, List<TempBean>> temp = new HashMap<>();// 创建缓存
+			return selectById(id, hierarchy, temp);
+		} else {
+			return selectById(id);
+		}
+	}
+	
+	/**
+	 * 关系缓存处理查询（外部无需调用所以是private，内部传播使用）
+	 * @author 鲜果
+	 * @date 2019年2月11日下午3:33:57
+	 * @param id id
+	 * @param hierarchy 关系传播深度
+	 * @param temp 缓存
+	 * @return
+	 * T
+	 */
+	private T selectById(String id, Integer hierarchy, Map<String, List<TempBean>> temp) {
+		if (hierarchy > 0) {
+			if (temp == null) {
+				temp = new HashMap<>();
+			}
+			List<TempBean> list = temp.get(classes.getName());
+			if (list == null) {
+				list = new ArrayList<>();
+				temp.put(classes.getName(), list);
+			}
+			Map<String, Object> value = getDao().selectById(id, table, classes);
+			if (value == null) {
+				return null;
+			}
+			T bean = PreparedStatementUtil.convertBeanByMap(classes, value, table);
+			TempBean tempBean = new TempBean();// 记录缓存
+			tempBean.setValue(value);
+			tempBean.setBean(bean);
+			list.add(tempBean);
+			return SelectRelation(bean, hierarchy, temp);
 		} else {
 			return selectById(id);
 		}
@@ -185,56 +240,67 @@ public abstract class HotServiceImpl<T, DAO extends HotDao<T>> extends SmallHotS
 	public List<T> SelectRelation(List<T> t, Integer hierarchy, Map<String, List<TempBean>> temp) {
 		try {
 			if (hierarchy <= 0) {
-				temp.clear();//清理缓存
-				System.gc();//回收垃圾
+				temp.clear();// 清理缓存
+				System.gc();// 回收垃圾
 				return t;
 			}
 			hierarchy--;
+			Map<String, Relation> relations = table.getRelationFields();
 			for (T value : t) {
-				Class<?> classes = value.getClass();
-				for (Field field : classes.getDeclaredFields()) {
-					com.xianguo.hotmapper.annotation.Relation relation = null;
-					if ((relation = field.getAnnotation(com.xianguo.hotmapper.annotation.Relation.class)) != null) {
-						field.setAccessible(true);
-						HotServiceImpl telationService = (HotServiceImpl) beanFactory.getBean(relation.service());
-						Class<?> parClass = telationService.classes;
-						Field parField = parClass.getDeclaredField(relation.pk());
-						parField.setAccessible(true);
-						if (parField != null) {
-							Field valField = classes.getDeclaredField(relation.fk());
-							valField.setAccessible(true);
-							if (valField != null) {
-								Object objBean = valField.get(value);
-								if (objBean != null && objBean instanceof String) {// 校验是否为空字符串
-									if (StringUtils.isEmpty((String) objBean)) {
+				for (String key : relations.keySet()) {
+					Relation relation = relations.get(key);
+					Field field = classes.getDeclaredField(relation.getFieldName());//关联实体字段
+					Field valueField = classes.getDeclaredField(relation.getFk());//关联外键字段
+					if(valueField == null) {
+						throw new RuntimeException(classes.getName()+"类无"+relation.getFk()+"字段，请注意关系配置。");
+					}
+					field.setAccessible(true);
+					HotServiceImpl telationService = (HotServiceImpl) beanFactory.getBean(relation.getService());
+					Class<?> parClass = telationService.classes;
+					Field parField = parClass.getDeclaredField(relation.getPk());
+					parField.setAccessible(true);
+					if (parField != null) {
+						Field valField = classes.getDeclaredField(relation.getFk());
+						valField.setAccessible(true);
+						if (valField != null) {
+							Object objBean = valField.get(value);
+							if (objBean != null && objBean instanceof String) {// 校验是否为空字符串
+								if (StringUtils.isEmpty((String) objBean)) {
+									continue;
+								}
+							}
+							
+
+							List<TempBean> tempBens = temp.get(telationService.classes.getName());
+							Boolean isTemp = true;
+							if (tempBens != null) {
+								for (TempBean tempBean : tempBens) {
+									String dataBaseName = telationService.table.getFieldsIncludeId().get(relation.getPk()).getDataBase();// 转换fk实体外键为数据库对应字段名
+									Object tempValue = tempBean.getValue().get(dataBaseName);
+									if (tempValue == null) {
 										continue;
 									}
-								}
-								if (objBean != null) {
-									Object par = parClass.newInstance();
-									parField.set(par, objBean);
-									if (field.getType().equals(List.class)) {
-										List<Object> valueBean = telationService.selectList(par, hierarchy, temp);
-										if (valueBean != null && valueBean.size() > 0) {
-											field.set(value, valueBean);
-										} else {
-											field.set(value, null);
-										}
-									} else {
-										for(TempBean tempBean : temp.get(telationService.classes.getName())) {
-											String dataBaseName = telationService.table.getFields().get(relation.fk()).getDataBase();//转换fk实体外键为数据库对应字段名
-											Object tempValue = tempBean.getValue().get(dataBaseName);
-											if(tempValue == null) {
-												continue;
-											}
-											if(tempValue.equals(field.get(value))) {//判断关系是否成立
-												field.set(value, field.get(value));
-												return t;//从缓存中拿到值后直接返回，不查询数据库
-											}
-										}
-										Object valueBean = telationService.select(par, hierarchy, temp);
-										field.set(value, valueBean);
+									if (tempValue.equals(valField.get(value))) {// 判断关系是否成立
+										field.set(value, tempBean.getBean());
+										isTemp = false;
+										break;// 从缓存中拿到值后直接进入下次循环，不查询数据库
 									}
+								}
+							}
+							
+							if (objBean != null && isTemp) {
+								Object par = parClass.newInstance();
+								parField.set(par, objBean);
+								if (field.getType().equals(List.class)) {
+									List<Object> valueBean = telationService.selectList(par, hierarchy, temp);
+									if (valueBean != null && valueBean.size() > 0) {
+										field.set(value, valueBean);
+									} else {
+										field.set(value, null);
+									}
+								} else {
+									Object valueBean = telationService.select(par, hierarchy, temp);
+									field.set(value, valueBean);
 								}
 							}
 						}
