@@ -29,7 +29,7 @@ public interface SelectRelationService<T> {
 	 * @return
 	 * T
 	 */
-	public T select(T t,Boolean openRelation,int hierarchy);
+	public T select(T t,Integer hierarchy);
 	
 	/**
 	 * 更具id查询实体并处理1层关系
@@ -52,7 +52,7 @@ public interface SelectRelationService<T> {
 	 * @return
 	 * T
 	 */
-	public T selectById(String id,Boolean openRelation,int hierarchy);
+	public T selectById(String id,Integer hierarchy);
 	
 	/**
 	 * 按条件查询list并处理一层关系返回实体
@@ -75,5 +75,5 @@ public interface SelectRelationService<T> {
 	 * @return
 	 * List<T>
 	 */
-	public List<T> selectList(T t,Boolean openRelation,int hierarchy);
+	public List<T> selectList(T t,Integer hierarchy);
 }
