@@ -1,7 +1,7 @@
 # HotMapper
 通用mapper快速开发框架，基于mybatis，目标是集成更多的开发工具，包括支付，权限。
 
-## 注解介绍：一共有9个注解，所有注解包地址都为：com.xianguo.hotmapper.annotation
+## 注解介绍：一共有10个注解，所有注解包地址都为：com.xianguo.hotmapper.annotation
   ## @Table
       此注解打在你的实体类class上，值为实体类对应的表名，此注解是必须的，不加的话启动项目时可能报错。
   ## @AnalysisType
@@ -99,7 +99,10 @@
       1.service：传入被关联表的ServiceImpl.class，传入的class必须继承HotServiceImpl。
       2.fk：当前表的外键字段名称(实体字段名称)
       3.pk：被关联表的主键名称(实体字段名称)
-
+  ## @NoCache
+      此注解打在你的实体类字段上，此注解不是必须的，此注解不需要值，HotMapper有一个会话缓存，作用域非常小，
+      如果你有两个实体有互相引用的关系，请给互相引用的字段打上此注解，不然会出现无限递归，造成JSON转换时出现
+      堆栈溢出。
 ## 框架搭建教程
   ## DAO
     在你的Dao目录下新建一个Dao接口，此接口必须继承HotDao<T>,HotDao的T为当前dao对应的实体
