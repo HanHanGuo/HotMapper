@@ -37,6 +37,7 @@ D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\annotation\Table.
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\dao\SaveDao.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\container\Container.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\dao\SelectDao.java
+D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\annotation\NoCache.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\provider\Provider.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\annotation\Symbol.java
 D:\githubproject\HotMapper\src\main\java\com\xianguo\hotmapper\provider\DeleteProvider.java
