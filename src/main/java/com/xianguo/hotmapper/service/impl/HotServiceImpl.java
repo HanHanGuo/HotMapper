@@ -273,7 +273,7 @@ public abstract class HotServiceImpl<T, DAO extends HotDao<T>> extends SmallHotS
 
 							List<TempBean> tempBens = temp.get(telationService.classes.getName());
 							Boolean isTemp = true;
-							if (tempBens != null) {
+							if (tempBens != null && relation.getCache()) {//有缓存和允许读取缓存时，才进行缓存读取。
 								for (TempBean tempBean : tempBens) {
 									String dataBaseName = telationService.table.getFieldsIncludeId().get(relation.getPk()).getDataBase();// 转换fk实体外键为数据库对应字段名
 									Object tempValue = tempBean.getValue().get(dataBaseName);

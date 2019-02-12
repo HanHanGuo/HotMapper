@@ -29,4 +29,12 @@ public class Relation {
 	 * 实体类型
 	 */
 	private Class<?> classType;
+	/**
+	 * 是否缓存
+	 */
+	private Boolean cache;
+	
+	public Relation() {
+		cache = true;//默认缓存
+	}
 }
