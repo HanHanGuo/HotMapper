@@ -280,8 +280,8 @@ public abstract class HotServiceImpl<T, DAO extends HotDao<T>> extends SmallHotS
 									if (tempValue == null) {
 										continue;
 									}
-									if (tempValue.equals(valField.get(value))) {// 判断关系是否成立
-										field.set(value, tempBean.getBean());
+									if (tempValue.equals(valField.get(value)) && field.getType().equals(tempBean.getBean().getClass()) ) {// 判断关系和类型是否成立
+										field.set(value, tempBean.getBean());//从缓存取出实体
 										isTemp = false;
 										break;// 从缓存中拿到值后直接进入下次循环，不查询数据库
 									}
