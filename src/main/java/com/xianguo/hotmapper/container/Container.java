@@ -121,6 +121,7 @@ public class Container {
 				}
 			}
 			table.setFieldsIncludeId(beanField);
+			table.setFieldsIncludeAll(beanFieldAll);
 			if (idByAnn != null) {
 				table.setId(idByAnn);
 			} else if (idByName != null) {
