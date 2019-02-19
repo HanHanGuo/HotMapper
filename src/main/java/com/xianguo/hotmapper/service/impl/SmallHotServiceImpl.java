@@ -8,7 +8,7 @@ import com.xianguo.hotmapper.dao.HotDao;
 import com.xianguo.hotmapper.service.SmallHotService;
 import com.xianguo.hotmapper.util.PreparedStatementUtil;
 
-public abstract class SmallHotServiceImpl<T,DAO extends HotDao<T>> extends BaseServiceImpl<T> implements SmallHotService<T> {
+public abstract class SmallHotServiceImpl<T,DAO extends HotDao<T>> extends BaseServiceImpl<T,DAO> implements SmallHotService<T> {
 	
     @Override
 	public T select(T t) {
@@ -83,13 +83,4 @@ public abstract class SmallHotServiceImpl<T,DAO extends HotDao<T>> extends BaseS
 		}
 		return sum;
 	}
-	
-	/**
-	 * 获取实体所对应的dao
-	 * @author 鲜果
-	 * @date 2019年1月30日上午10:15:30
-	 * @return
-	 * DAO
-	 */
-	public abstract DAO getDao();
 }

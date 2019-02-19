@@ -3,7 +3,7 @@ Implementation-Title: hotmapper
 Implementation-Version: 0.0.1-SNAPSHOT
 Built-By: Administrator
 Implementation-Vendor-Id: com.xianguo
-Build-Jdk: 1.8.0_191
+Build-Jdk: 1.8.0_201
 Implementation-URL: http://maven.apache.org
 Created-By: Maven Integration for Eclipse
 

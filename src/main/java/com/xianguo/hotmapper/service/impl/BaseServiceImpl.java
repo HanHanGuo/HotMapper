@@ -11,7 +11,7 @@ import com.xianguo.hotmapper.container.Container;
  * @date 2019年1月30日上午10:18:50
  * @param <T>
  */
-public class BaseServiceImpl<T> {
+public abstract class BaseServiceImpl<T,DAO> {
 	public Class<T> classes;
 	
 	public Table table;
@@ -21,4 +21,13 @@ public class BaseServiceImpl<T> {
     	classes = (Class <T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     	table = Container.load(classes);
     }
+	
+	/**
+	 * 获取实体所对应的dao
+	 * @author 鲜果
+	 * @date 2019年1月30日上午10:15:30
+	 * @return
+	 * DAO
+	 */
+	public abstract DAO getDao();
 }
