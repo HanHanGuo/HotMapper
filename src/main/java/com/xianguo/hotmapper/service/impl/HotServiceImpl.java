@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
  * @param <T> 实体类
  * @param <DAO> 对应dao类
  */
-@Slf4j
 public abstract class HotServiceImpl<T, DAO extends HotDao<T>> extends ViewServiceImpl<T, DAO> implements HotService<T> {
 	
 	@Override

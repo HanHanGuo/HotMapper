@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.github.pagehelper.Page;
 import com.xianguo.hotmapper.bean.Relation;
 import com.xianguo.hotmapper.bean.TempBean;
-import com.xianguo.hotmapper.dao.HotDao;
+import com.xianguo.hotmapper.dao.ViewDao;
 import com.xianguo.hotmapper.service.ViewService;
 import com.xianguo.hotmapper.util.MapUtil;
 import com.xianguo.hotmapper.util.PreparedStatementUtil;
@@ -21,7 +21,7 @@ import com.xianguo.hotmapper.util.PreparedStatementUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public abstract class ViewServiceImpl<T,DAO extends HotDao<T>> extends BaseServiceImpl<T,DAO> implements ViewService<T> {
+public abstract class ViewServiceImpl<T,DAO extends ViewDao<T>> extends BaseServiceImpl<T,DAO> implements ViewService<T> {
 
 	@Autowired
 	private BeanFactory beanFactory;
