@@ -6,6 +6,6 @@ package com.xianguo.hotmapper.dao;
  * @date:2019年1月21日
  * @param <T>
  */
-public interface HotDao<T> extends SaveDao<T>,DeleteDao<T>,UpdateDao<T>,SelectDao<T> {
+public interface HotDao<T> extends SaveDao<T>,DeleteDao<T>,UpdateDao<T>,ViewDao<T> {
 	
 }
