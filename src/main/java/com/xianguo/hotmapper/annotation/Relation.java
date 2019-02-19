@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.xianguo.hotmapper.service.impl.HotServiceImpl;
+import com.xianguo.hotmapper.service.impl.ViewServiceImpl;
 
 /**
  * 关联关系主注解，加上此注解的实体在查询的时候，会自动更具关系注入值。
@@ -23,7 +23,7 @@ public @interface Relation {
 	 * Class<? extends HotServiceImpl>
 	 */
 	@SuppressWarnings("rawtypes")
-	public Class<? extends HotServiceImpl> service();
+	public Class<? extends ViewServiceImpl> service();
 	/**
 	 * 当前表外键
 	 * @author 鲜果
