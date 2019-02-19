@@ -68,11 +68,12 @@ public class Container {
 			Field[] fields = classes.getDeclaredFields();
 			com.xianguo.hotmapper.bean.Field idByAnn = null;
 			com.xianguo.hotmapper.bean.Field idByName = null;
-			Map<String, com.xianguo.hotmapper.bean.Field> beanField = new HashMap<>();
+			Map<String, com.xianguo.hotmapper.bean.Field> beanField = new HashMap<>();//表字段包括id
 			Map<String, com.xianguo.hotmapper.bean.Relation> relations = new HashMap<>();// 关系字段map
+			Map<String, com.xianguo.hotmapper.bean.Field> beanFieldAll = new HashMap<>();//实体字段包括被忽略的字段
 			List<com.xianguo.hotmapper.bean.Field> orderBys = new ArrayList<>();// 排序字段
 			for (Field field : fields) {
-				if (field.getAnnotation(HotTransient.class) == null && field.getAnnotation(Relation.class) == null && field.getAnnotation(Relation.class) == null) {// 处理数据库字段
+				if (field.getAnnotation(HotTransient.class) == null && field.getAnnotation(Relation.class) == null) {// 处理数据库字段
 					com.xianguo.hotmapper.annotation.Field databaseFieldNameAnn = field.getAnnotation(com.xianguo.hotmapper.annotation.Field.class);
 					if (idByAnn == null) {
 						Id id = field.getAnnotation(Id.class);
@@ -97,6 +98,13 @@ public class Container {
 						orderBys.add(BeanFieldSave);
 					}
 					beanField.put(field.getName(), BeanFieldSave);
+					beanFieldAll.put(field.getName(), BeanFieldSave);//存放所有字段map
+				}
+				if(field.getAnnotation(HotTransient.class) != null && field.getType() == String.class){//被忽略的字段并且为String才处理
+					com.xianguo.hotmapper.bean.Field BeanFieldSave = new com.xianguo.hotmapper.bean.Field();//
+					BeanFieldSave.setClassType(field.getType());
+					BeanFieldSave.setDataBase(field.getName());
+					beanFieldAll.put(field.getName(), BeanFieldSave);//存放所有字段map
 				}
 				Relation relation = null;
 				if ((relation = field.getAnnotation(Relation.class)) != null) {// 处理关系字段
@@ -120,7 +128,7 @@ public class Container {
 			} else {
 				throw new RuntimeException(classes.getName() + "无法确定ID");
 			}
-			Map<String, com.xianguo.hotmapper.bean.Field> mapCopy = beanField.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+			Map<String, com.xianguo.hotmapper.bean.Field> mapCopy = beanField.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));//表字段不包括ID
 			mapCopy.remove(table.getId().getField());
 			table.setFields(mapCopy);
 			table.setOrderByFields(orderBys);// 放入需要排序的字段

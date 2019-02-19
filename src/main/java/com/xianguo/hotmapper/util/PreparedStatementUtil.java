@@ -124,7 +124,7 @@ public class PreparedStatementUtil {
 			Boolean isNull = true;
 			for(Field field : classes.getDeclaredFields()) {
 				field.setAccessible(true);
-				com.xianguo.hotmapper.bean.Field fieldBean = table.getFieldsIncludeId().get(field.getName());
+				com.xianguo.hotmapper.bean.Field fieldBean = table.getFieldsIncludeAll().get(field.getName());
 				if(fieldBean != null) {
 					Object val = values.get(fieldBean.getDataBase());
 					field.set(obj, val);

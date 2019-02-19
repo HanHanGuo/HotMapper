@@ -16,18 +16,21 @@ public class Table{
 	 */
 	private Field id;
 	/**
-	 * 字段
+	 * 表字段
 	 */
 	private Map<String, Field> fields;
 	/**
-	 * 字段包括id
+	 * 表字段包括id
 	 */
 	private Map<String, Field> fieldsIncludeId;
+	/**
+	 * 实体字段包括被忽略的字段
+	 */
+	private Map<String, Field> fieldsIncludeAll;
 	/**
 	 * 关系字段
 	 */
 	private Map<String, Relation> relationFields;
-	
 	/**
 	 * 排序字段
 	 */
