@@ -220,7 +220,7 @@ public abstract class ViewServiceImpl<T,DAO extends ViewDao<T>> extends BaseServ
 		if (list == null) {
 			list = new ArrayList<>();
 			temp.put(classes.getName(), list);
-		}
+		} 
 		Map<String, Object> value = getDao().selectById(id, table, classes);
 		if (value == null) {
 			return null;
