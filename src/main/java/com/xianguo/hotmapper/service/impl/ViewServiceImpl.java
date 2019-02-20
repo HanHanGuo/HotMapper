@@ -138,7 +138,6 @@ public abstract class ViewServiceImpl<T,DAO extends ViewDao<T>> extends BaseServ
 	 * @param temp      缓存
 	 * @return List<T> 返回值
 	 */
-	@SuppressWarnings("unchecked")
 	private List<T> selectList(T t, Integer hierarchy, Map<String, List<TempBean>> temp) {
 		if (hierarchy > 0) {
 			if (temp == null) {
