@@ -138,6 +138,7 @@ public abstract class ViewServiceImpl<T,DAO extends ViewDao<T>> extends BaseServ
 	 * @param temp      缓存
 	 * @return List<T> 返回值
 	 */
+	@SuppressWarnings("unchecked")
 	private List<T> selectList(T t, Integer hierarchy, Map<String, List<TempBean>> temp) {
 		if (hierarchy > 0) {
 			if (temp == null) {
@@ -150,6 +151,13 @@ public abstract class ViewServiceImpl<T,DAO extends ViewDao<T>> extends BaseServ
 			}
 			List<Map<String, Object>> values = getDao().selectList(t, table, classes);
 			List<T> beans = PreparedStatementUtil.convertBeanByList(classes, values, table);
+			if(values instanceof Page<?>) {//处理PageHelper兼容性
+				Page<T> page = new Page<T>();
+				for(T bean : beans) {
+					page.add(bean);
+				}
+				beans = page;
+			}
 			Integer index = 0;
 			for (Map<String, Object> value : values) {
 				TempBean tempBean = new TempBean();
