@@ -84,27 +84,27 @@ public abstract class ViewServiceImpl<T,DAO extends ViewDao<T>> extends BaseServ
 	 * @return T 查询结果
 	 */
 	private T select(T t, Integer hierarchy, Map<String, List<TempBean>> temp) {
+		if (temp == null) {
+			temp = new HashMap<>();
+		}
+		List<TempBean> list = temp.get(classes.getName());
+		if (list == null) {
+			list = new ArrayList<>();
+			temp.put(classes.getName(), list);
+		}
+		Map<String, Object> value = getDao().select(t, table, classes);
+		if (value == null) {
+			return null;
+		}
+		T bean = PreparedStatementUtil.convertBeanByMap(classes, value, table);
+		TempBean tempBean = new TempBean();// 记录缓存
+		tempBean.setValue(value);
+		tempBean.setBean(bean);
+		list.add(tempBean);
 		if (hierarchy > 0) {
-			if (temp == null) {
-				temp = new HashMap<>();
-			}
-			List<TempBean> list = temp.get(classes.getName());
-			if (list == null) {
-				list = new ArrayList<>();
-				temp.put(classes.getName(), list);
-			}
-			Map<String, Object> value = getDao().select(t, table, classes);
-			if (value == null) {
-				return null;
-			}
-			T bean = PreparedStatementUtil.convertBeanByMap(classes, value, table);
-			TempBean tempBean = new TempBean();// 记录缓存
-			tempBean.setValue(value);
-			tempBean.setBean(bean);
-			list.add(tempBean);
 			return SelectRelation(bean, hierarchy, temp);
 		} else {
-			return select(t);
+			return bean;
 		}
 	}
 
@@ -140,44 +140,45 @@ public abstract class ViewServiceImpl<T,DAO extends ViewDao<T>> extends BaseServ
 	 */
 	@SuppressWarnings("unchecked")
 	private List<T> selectList(T t, Integer hierarchy, Map<String, List<TempBean>> temp) {
+		if (temp == null) {
+			temp = new HashMap<>();
+		}
+		List<TempBean> list = temp.get(classes.getName());
+		if (list == null) {
+			list = new ArrayList<>();
+			temp.put(classes.getName(), list);
+		}
+		List<Map<String, Object>> values = getDao().selectList(t, table, classes);
+		List<T> beans = PreparedStatementUtil.convertBeanByList(classes, values, table);
+		
+		Integer index = 0;
+		for (Map<String, Object> value : values) {
+			TempBean tempBean = new TempBean();
+			tempBean.setValue(value);
+			tempBean.setBean(beans.get(index));
+			list.add(tempBean);// 放入集合，避免重复转换。
+			index++;
+		}
+		
+		if(values instanceof Page<?>) {//处理PageHelper兼容性
+			Page<T> page = (Page<T>) values;
+			page.clear();
+			for(T bean : beans) {
+				page.add(bean);
+			}
+			beans = page;
+		}
+		
+		if(beans.size() > 0) {
+			TempBean tempBean = new TempBean();
+			tempBean.setValue(MapUtil.object2Map(t));
+			tempBean.setBean(beans);
+			list.add(tempBean);
+		}
 		if (hierarchy > 0) {
-			if (temp == null) {
-				temp = new HashMap<>();
-			}
-			List<TempBean> list = temp.get(classes.getName());
-			if (list == null) {
-				list = new ArrayList<>();
-				temp.put(classes.getName(), list);
-			}
-			List<Map<String, Object>> values = getDao().selectList(t, table, classes);
-			List<T> beans = PreparedStatementUtil.convertBeanByList(classes, values, table);
-			
-			Integer index = 0;
-			for (Map<String, Object> value : values) {
-				TempBean tempBean = new TempBean();
-				tempBean.setValue(value);
-				tempBean.setBean(beans.get(index));
-				list.add(tempBean);// 放入集合，避免重复转换。
-				index++;
-			}
-			
-			if(values instanceof Page<?>) {//处理PageHelper兼容性
-				Page<T> page = (Page<T>) values;
-				page.clear();
-				for(T bean : beans) {
-					page.add(bean);
-				}
-				beans = page;
-			}
-			
-			if(beans.size() > 0) {
-				TempBean tempBean = new TempBean();
-				tempBean.setValue(MapUtil.object2Map(t));
-				tempBean.setBean(beans);
-			}
 			return SelectRelation(beans, hierarchy, temp);
 		} else {
-			return selectList(t);
+			return beans;
 		}	
 	}
 
@@ -212,27 +213,27 @@ public abstract class ViewServiceImpl<T,DAO extends ViewDao<T>> extends BaseServ
 	 * T
 	 */
 	private T selectById(String id, Integer hierarchy, Map<String, List<TempBean>> temp) {
+		if (temp == null) {
+			temp = new HashMap<>();
+		}
+		List<TempBean> list = temp.get(classes.getName());
+		if (list == null) {
+			list = new ArrayList<>();
+			temp.put(classes.getName(), list);
+		}
+		Map<String, Object> value = getDao().selectById(id, table, classes);
+		if (value == null) {
+			return null;
+		}
+		T bean = PreparedStatementUtil.convertBeanByMap(classes, value, table);
+		TempBean tempBean = new TempBean();// 记录缓存
+		tempBean.setValue(value);
+		tempBean.setBean(bean);
+		list.add(tempBean);
 		if (hierarchy > 0) {
-			if (temp == null) {
-				temp = new HashMap<>();
-			}
-			List<TempBean> list = temp.get(classes.getName());
-			if (list == null) {
-				list = new ArrayList<>();
-				temp.put(classes.getName(), list);
-			}
-			Map<String, Object> value = getDao().selectById(id, table, classes);
-			if (value == null) {
-				return null;
-			}
-			T bean = PreparedStatementUtil.convertBeanByMap(classes, value, table);
-			TempBean tempBean = new TempBean();// 记录缓存
-			tempBean.setValue(value);
-			tempBean.setBean(bean);
-			list.add(tempBean);
 			return SelectRelation(bean, hierarchy, temp);
 		} else {
-			return selectById(id);
+			return bean;
 		}
 	}
 
