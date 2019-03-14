@@ -1,6 +1,8 @@
 package com.xianguo.hotmapper.container;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,18 +10,24 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.xianguo.hotmapper.annotation.AnalysisType;
 import com.xianguo.hotmapper.annotation.Condition;
+import com.xianguo.hotmapper.annotation.FieldInfo;
 import com.xianguo.hotmapper.annotation.HotTransient;
 import com.xianguo.hotmapper.annotation.Id;
 import com.xianguo.hotmapper.annotation.NoCache;
 import com.xianguo.hotmapper.annotation.OrderBy;
+import com.xianguo.hotmapper.annotation.ReTable;
 import com.xianguo.hotmapper.annotation.Relation;
 import com.xianguo.hotmapper.annotation.Symbol;
 import com.xianguo.hotmapper.bean.Table;
 import com.xianguo.hotmapper.enums.AnalysusTypeEnmu;
+import com.xianguo.hotmapper.sql.Sql;
 import com.xianguo.hotmapper.util.FieldNameUtil;
+import com.xianguo.hotmapper.util.SqlSessionFactoryUtil;
 
 /**
  * hotmapper容器
@@ -28,7 +36,6 @@ import com.xianguo.hotmapper.util.FieldNameUtil;
  * @date 2019年1月30日上午10:19:36
  */
 public class Container {
-
 	/**
 	 * 容器
 	 */
@@ -42,7 +49,7 @@ public class Container {
 	 * @param classes
 	 * @return Table
 	 */
-	public static Table load(Class<?> classes) {
+	public static Table load(SqlSessionFactoryUtil sqlSessionFactoryUtil,Class<?> classes) {
 		synchronized (tables) {
 			com.xianguo.hotmapper.annotation.Table tableName = classes.getAnnotation(com.xianguo.hotmapper.annotation.Table.class);
 			if (tableName == null) {
@@ -135,8 +142,49 @@ public class Container {
 			table.setOrderByFields(orderBys);// 放入需要排序的字段
 			table.setRelationFields(relations);// 存入关系字段
 			tables.put(table.getName(), table);
+			
+			if(classes.getAnnotation(ReTable.class) != null) {//逆向生成表
+				reverseTable(sqlSessionFactoryUtil,classes,table);
+			}
 			return table;
 		}
+	}
+	/**
+	 * 
+	 * 逆向工程-逆向建表
+	 * @author 武昱坤
+	 * @param @param classes 实体Class
+	 * @param @param table	  实体解析的Table
+	 * @date 2019年3月14日
+	 * @return void
+	 * @throws
+	 */
+	private static void reverseTable(SqlSessionFactoryUtil sqlSessionFactoryUtil,Class<?> classes,Table table) {
+		try {
+			Map<String, com.xianguo.hotmapper.bean.Field> maps = table.getFieldsIncludeId();
+			List<com.xianguo.hotmapper.bean.Field> reverseField = new ArrayList<>();
+			//1.拿到表名、表对应字段信息
+			for(String key : maps.keySet()) {
+				Field field = classes.getDeclaredField(maps.get(key).getField());
+				FieldInfo fieldInfo = null;
+				if((fieldInfo = field.getAnnotation(FieldInfo.class)) != null) {
+					maps.get(key).setDetail(fieldInfo.detail());
+					maps.get(key).setLength(fieldInfo.length());
+					maps.get(key).setFiledIsNull(fieldInfo.isNull());
+					maps.get(key).setFiledType(fieldInfo.type());
+					reverseField.add(maps.get(key));
+				}
+			}
+			String sql = Sql.SQL(Sql.CREATE_TABLE(table.getName()),Sql.CREATE_TABLE_VALUE(table));
+			SqlSession sqlSession = sqlSessionFactoryUtil.getsqlSession();
+			Connection connection = sqlSession.getConnection();
+			Statement stmt = connection.createStatement();
+			stmt.execute(sql);
+			sqlSession.commit();
+		} catch (Exception e) {
+			throw new RuntimeException(classes.getName() + "逆向工程失败");
+		}
+		
 	}
 
 }

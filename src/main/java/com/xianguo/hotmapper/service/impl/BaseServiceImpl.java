@@ -4,9 +4,12 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.xianguo.hotmapper.bean.Table;
 import com.xianguo.hotmapper.container.Container;
 import com.xianguo.hotmapper.util.PreparedStatementUtil;
+import com.xianguo.hotmapper.util.SqlSessionFactoryUtil;
 
 /**
  * 基础service实现类，对hotmapper加载信息到hotmapper容器
@@ -19,10 +22,13 @@ public abstract class BaseServiceImpl<T,DAO> {
 	
 	public Table table;
 	
+	@Autowired
+	private SqlSessionFactoryUtil sqlSessionFactoryUtil;
+	
     @SuppressWarnings("unchecked")
 	protected BaseServiceImpl() {
     	classes = (Class <T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-    	table = Container.load(classes);
+    	table = Container.load(sqlSessionFactoryUtil,classes);
     }
     
     /**

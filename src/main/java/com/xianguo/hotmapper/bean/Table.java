@@ -35,4 +35,8 @@ public class Table{
 	 * 排序字段
 	 */
 	private List<Field> orderByFields;
+	/**
+	 * 需要逆向的字段集合
+	 */
+	private List<Field> reverseFields;
 }

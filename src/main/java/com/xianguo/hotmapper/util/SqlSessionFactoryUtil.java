@@ -30,6 +30,8 @@ public class SqlSessionFactoryUtil {
 			throw new RuntimeException("连接数据库失败请检查数据库配置");
 		}
 	}
+	
+	
 	/*public SqlSession getsqlSession() {
 		try {
 			if(sqlSession == null) {

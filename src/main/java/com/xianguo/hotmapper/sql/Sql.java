@@ -7,9 +7,11 @@ import org.apache.commons.lang.StringUtils;
 
 import com.xianguo.hotmapper.bean.Field;
 import com.xianguo.hotmapper.bean.FieldValue;
+import com.xianguo.hotmapper.bean.Table;
 import com.xianguo.hotmapper.interfaces.SymbolInterface;
 
 public class Sql {
+	
 	
 	public static StringBuilder SELECT(Map<String, Field> fields) {
 		StringBuilder sb = new StringBuilder();
@@ -235,6 +237,25 @@ public class Sql {
 		return sb;
 	}
 	
+	public static StringBuilder CREATE_TABLE(String tableName) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("CREATE TABLE IF NOT EXISTS ").append(tableName);
+		return sb;
+	}
+	
+	public static StringBuilder CREATE_TABLE_VALUE(Table table) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("(");
+		for(Field field : table.getReverseFields()) {
+			if(!sb.toString().equals("(")) {
+				sb.append(",");
+			}
+			sb.append("'").append(field.getDataBase()).append("'").append(" ").append(field.getFiledType().getValue()).append("(").append(field.getLength()).append(")").append(" ").append(field.getFiledIsNull().getValue()).append(" ").append("COMMENT").append(" ").append("'").append(field.getDetail()).append("'");
+		}
+		sb.append(",PRIMARY KEY ('").append(table.getId().getDataBase()).append("') USING BTREE").append(");");
+		return sb;
+	}
+	
 	public static String SQL(StringBuilder... sqls) {
 		StringBuilder sb = new StringBuilder();
 		for(StringBuilder sql : sqls) {
@@ -242,4 +263,5 @@ public class Sql {
 		}
 		return sb.toString();
 	}
+	
 }
