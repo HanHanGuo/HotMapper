@@ -16,6 +16,10 @@ public class Table{
 	 */
 	private Field id;
 	/**
+	 * 实体class对象
+	 */
+	private Class<?> fieldClasses;
+	/**
 	 * 表字段
 	 */
 	private Map<String, Field> fields;

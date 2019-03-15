@@ -6,7 +6,7 @@
 
 	<groupId>com.xianguo</groupId>
 	<artifactId>hotmapper</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.3</version>
 	<packaging>jar</packaging>
 	<name>hotmapper</name>
 	<url>http://maven.apache.org</url>
@@ -33,10 +33,6 @@
 			<groupId>org.mybatis</groupId>
 			<artifactId>mybatis</artifactId>
 			<version>3.2.8</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

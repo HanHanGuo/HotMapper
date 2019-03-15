@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import com.xianguo.hotmapper.bean.Field;
 import com.xianguo.hotmapper.bean.FieldValue;
 import com.xianguo.hotmapper.bean.Table;
+import com.xianguo.hotmapper.enums.FieldType;
 import com.xianguo.hotmapper.interfaces.SymbolInterface;
 
 public class Sql {
@@ -250,9 +251,13 @@ public class Sql {
 			if(!sb.toString().equals("(")) {
 				sb.append(",");
 			}
-			sb.append("'").append(field.getDataBase()).append("'").append(" ").append(field.getFiledType().getValue()).append("(").append(field.getLength()).append(")").append(" ").append(field.getFiledIsNull().getValue()).append(" ").append("COMMENT").append(" ").append("'").append(field.getDetail()).append("'");
+			sb.append(field.getDataBase()).append(" ").append(field.getFiledType().getValue());
+			if(field.getFiledType() == FieldType.VARCHAR) {
+				sb.append("(").append(field.getLength()).append(")");
+			}
+			sb.append(" ").append(field.getFiledIsNull().getValue()).append(" ").append("COMMENT").append(" ").append("'").append(field.getDetail()).append("'");
 		}
-		sb.append(",PRIMARY KEY ('").append(table.getId().getDataBase()).append("') USING BTREE").append(");");
+		sb.append(",PRIMARY KEY (").append(table.getId().getDataBase()).append(") USING BTREE").append(");");
 		return sb;
 	}
 	

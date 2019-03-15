@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.session.SqlSession;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.xianguo.hotmapper.annotation.AnalysisType;
 import com.xianguo.hotmapper.annotation.Condition;
@@ -49,7 +48,7 @@ public class Container {
 	 * @param classes
 	 * @return Table
 	 */
-	public static Table load(SqlSessionFactoryUtil sqlSessionFactoryUtil,Class<?> classes) {
+	public static Table load(Class<?> classes) {
 		synchronized (tables) {
 			com.xianguo.hotmapper.annotation.Table tableName = classes.getAnnotation(com.xianguo.hotmapper.annotation.Table.class);
 			if (tableName == null) {
@@ -64,6 +63,7 @@ public class Container {
 			}
 			table = new Table();
 			table.setName(tableName.value());
+			table.setFieldClasses(classes);
 			AnalysusTypeEnmu nameStyle = null;
 			AnalysisType analysisType = classes.getAnnotation(com.xianguo.hotmapper.annotation.AnalysisType.class);
 			if (analysisType == null) {
@@ -143,12 +143,11 @@ public class Container {
 			table.setRelationFields(relations);// 存入关系字段
 			tables.put(table.getName(), table);
 			
-			if(classes.getAnnotation(ReTable.class) != null) {//逆向生成表
-				reverseTable(sqlSessionFactoryUtil,classes,table);
-			}
+			
 			return table;
 		}
 	}
+	
 	/**
 	 * 
 	 * 逆向工程-逆向建表
@@ -159,8 +158,11 @@ public class Container {
 	 * @return void
 	 * @throws
 	 */
-	private static void reverseTable(SqlSessionFactoryUtil sqlSessionFactoryUtil,Class<?> classes,Table table) {
+	public static void reverseTable(SqlSessionFactoryUtil sqlSessionFactoryUtil,Class<?> classes,Table table) {
 		try {
+			if(classes.getAnnotation(ReTable.class) == null) {//逆向生成表
+				return;
+			}
 			Map<String, com.xianguo.hotmapper.bean.Field> maps = table.getFieldsIncludeId();
 			List<com.xianguo.hotmapper.bean.Field> reverseField = new ArrayList<>();
 			//1.拿到表名、表对应字段信息
@@ -175,6 +177,7 @@ public class Container {
 					reverseField.add(maps.get(key));
 				}
 			}
+			table.setReverseFields(reverseField);
 			String sql = Sql.SQL(Sql.CREATE_TABLE(table.getName()),Sql.CREATE_TABLE_VALUE(table));
 			SqlSession sqlSession = sqlSessionFactoryUtil.getsqlSession();
 			Connection connection = sqlSession.getConnection();
