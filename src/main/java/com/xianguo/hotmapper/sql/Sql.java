@@ -252,7 +252,7 @@ public class Sql {
 				sb.append(",");
 			}
 			sb.append(field.getDataBase()).append(" ").append(field.getFiledType().getValue());
-			if(field.getFiledType() == FieldType.VARCHAR) {
+			if(field.getFiledType() != FieldType.TEXT) {
 				sb.append("(").append(field.getLength()).append(")");
 			}
 			sb.append(" ").append(field.getFiledIsNull().getValue()).append(" ").append("COMMENT").append(" ").append("'").append(field.getDetail()).append("'");

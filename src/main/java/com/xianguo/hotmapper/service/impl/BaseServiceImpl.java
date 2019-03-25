@@ -1,9 +1,11 @@
 package com.xianguo.hotmapper.service.impl;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.github.pagehelper.Page;
 import com.xianguo.hotmapper.bean.Table;
 import com.xianguo.hotmapper.container.Container;
 import com.xianguo.hotmapper.util.PreparedStatementUtil;
@@ -33,8 +35,19 @@ public abstract class BaseServiceImpl<T,DAO> {
      * @return
      * List<T>
      */
-    public List<T> MapToBean(List<Map<String, Object>> maps){
-    	return PreparedStatementUtil.convertBeanByList(classes, maps, table);
+    @SuppressWarnings("unchecked")
+	public List<T> MapToBean(List<Map<String, Object>> maps){
+    	if(maps instanceof Page<?>) {//处理PageHelper兼容性
+    		Page<T> page = (Page<T>)maps;
+    		List<T> beans = PreparedStatementUtil.convertBeanByList(classes, maps, table);
+    		page.clear();
+    		for(T t : beans) {
+    			page.add(t);
+    		}
+    		return page;
+    	}else {
+    		return PreparedStatementUtil.convertBeanByList(classes, maps, table);
+    	}
     }
     
     /**
