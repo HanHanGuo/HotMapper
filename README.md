@@ -107,7 +107,7 @@
 
   ## Bean
   ```Java
-    @Table("STUDENT")//实体对应的表明
+    @Table("STUDENT")//实体对应的表名
     @ReTable//逆向工程，加上次注解可以在启动项目时自己建立STUDENT表
     @AnalysisType(AnalysusTypeEnmu.UP_UNDERLINE)//数据库字段风格(这里表示全大写加下划线,HotMapper会自己转换)
     public class Student {
