@@ -112,7 +112,7 @@
   ## Service
     在你的service目录下新建一个Service接口，此接口必须继承HotService<T>,HotService的T为
     当前对应的实体
-    public interface testService extends HotService<bean> {
+    public interface testService extends HotService<Bean> {
 
     }
   ## ServiceImpl
@@ -121,7 +121,7 @@
     的Dao，一般用Spring的Autowired,并接入你创建的对应Service接口
 
     @Service
-    public class test extends HotServiceImpl<com.yrsoft.entity.test,aaaDao> implements testService {
+    public class test extends HotServiceImpl<Bean> implements testService {
 
     	@Autowired
     	aaaDao dao;
