@@ -104,6 +104,50 @@
       如果你有两个实体有互相引用的关系，请给互相引用的字段打上此注解，不然会出现无限递归，造成JSON转换时出现
       堆栈溢出。
 ## 框架搭建教程
+
+  ## Bean
+  ```Java
+    @Table("STUDENT")//实体对应的表明
+    @ReTable//逆向工程，加上次注解可以在启动项目时自己建立STUDENT表
+    @AnalysisType(AnalysusTypeEnmu.UP_UNDERLINE)//数据库字段风格(这里表示全大写加下划线,HotMapper会自己转换)
+    public class Student {
+
+      @FieldInfo(length="32",isNull=FieldIsNull.NOT_NULL,type=FieldType.VARCHAR,detail="学生id")//字段信息 加了@ReTable之后用到 数据库对应的字段信息
+      private String id;
+
+      @FieldInfo(length="32")
+      private String name;
+
+      @FieldInfo(length="3")
+      private String age;
+
+      @FieldInfo(length="1")
+      private String sex;
+
+      private String classRoomId;//教室Id
+
+      @OrderBy(OrderByEnmu.DESC)//查询时根据创建日期倒叙
+      private String createDate;
+
+      @Relation(fk="classRoomId",pk="id",service=StudentServiceImpl.class)//自动关联关系，配置好了之后HotMapper会在查询时注入对应的值，fk当实体外键，pk被关联实体主键，service被关联实体对应的ServiceImpl必须继承HotServiceImpl
+      private Student student;
+   }
+  ```
+  ```Java
+  @Table("CLASS_ROOM")
+  @AnalysisType(AnalysusTypeEnmu.UP_UNDERLINE)
+  public class ClassRoom {
+    @Id
+    private String id;
+
+    private String name;
+
+    @OrderBy(OrderByEnmu.DESC)
+    private String createDate;
+  }
+  ```
+  
+  
   ## DAO
     在你的Dao目录下新建一个Dao接口，此接口必须继承HotDao<T>,HotDao的T为当前dao对应的实体
   ```Java
