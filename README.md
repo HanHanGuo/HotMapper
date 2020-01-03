@@ -180,6 +180,26 @@
     	}
     }
  ```
+   ## 使用
+ ```Java
+    studentService.delete(Sutdent sutdent);//根据实体条件删除
+    studentService.deleteById(String id);//根据id删除
+    studentService.deleteByIds(List<String> ids);//根据id集合删除多条
+    studentService.save(List<Student> students);//根据实体集合保存多条
+    studentService.save(Sutdent sutdent);//根据实体保存一条
+    studentService.update(Student student);//根据实体更新一条
+    studentService.update(List<Student> students);//根据实体更新多条
+    Student student = studentService.select(Sutdent sutdent);//根据条件查询一条
+    Student student = studentService.select(Sutdent sutdent, true);//根据条件查询一条并且处理一层关联关系
+    Student student = studentService.select(Sutdent sutdent, Integer 3);//根据条件查询一条并且处理3层关联关系
+    Student student = studentService.selectById(String id);//根据id查询一条
+    Student student = studentService.selectById(String id, true);//根据条件查询一条并且处理一层关联关系
+    Student student = studentService.selectById(String id, 3);//根据条件查询一条并且处理3层关联关系
+    List<Student> students = studentService.selectList(Sutdent sutdent);//根据条件查询多条
+    List<Student> students = studentService.selectList(Sutdent sutdent, true);//根据条件查询多条并且处理一层关联关系
+    List<Student> students = studentService.selectList(Sutdent sutdent, Integer 3);//根据条件查询多条并且处理3层关联关系
+ ```
+
 ## 最后
   你已经接入了HotMapper可以愉快的调用你创建的ServiceImpl里面的所有增删改查方法啦，HotMapper
   也对PageHelper做了处理，可以完美支持，此框架希望能大幅度减少大家的重复性代码工作。
