@@ -106,22 +106,22 @@
 ## 框架搭建教程
   ## DAO
     在你的Dao目录下新建一个Dao接口，此接口必须继承HotDao<T>,HotDao的T为当前dao对应的实体
-    public interface testDao extends HotDao<bean> {
+    public interface TestDao extends HotDao<Bean> {
 
     }
   ## Service
     在你的service目录下新建一个Service接口，此接口必须继承HotService<T>,HotService的T为
     当前对应的实体
-    public interface testService extends HotService<Bean> {
+    public interface TestService extends HotService<Bean> {
 
     }
   ## ServiceImpl
     在你的service目录下新建一个ServiceImpl实现，此实现必须继承HotServiceImpl<T,D>,HotService的T为
     当前实现对应的实体,D为当前实现对应的Dao接口，并且实现getDao接口，getDao需要你自己创建当前实现对应
     的Dao，一般用Spring的Autowired,并接入你创建的对应Service接口
-
+  ```Java
     @Service
-    public class test extends HotServiceImpl<Bean> implements testService {
+    public class TestServiceImpl extends HotServiceImpl<Bean,TestDao> implements TestService {
 
     	@Autowired
     	aaaDao dao;
@@ -131,6 +131,7 @@
     		return dao;
     	}
     }
+ ```
 ## 最后
   你已经接入了HotMapper可以愉快的调用你创建的ServiceImpl里面的所有增删改查方法啦，HotMapper
   也对PageHelper做了处理，可以完美支持，此框架希望能大幅度减少大家的重复性代码工作。
