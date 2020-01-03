@@ -106,15 +106,19 @@
 ## 框架搭建教程
   ## DAO
     在你的Dao目录下新建一个Dao接口，此接口必须继承HotDao<T>,HotDao的T为当前dao对应的实体
+  ```Java
     public interface TestDao extends HotDao<Bean> {
 
     }
+  ```
   ## Service
     在你的service目录下新建一个Service接口，此接口必须继承HotService<T>,HotService的T为
     当前对应的实体
+  ```Java
     public interface TestService extends HotService<Bean> {
 
     }
+  ```
   ## ServiceImpl
     在你的service目录下新建一个ServiceImpl实现，此实现必须继承HotServiceImpl<T,D>,HotService的T为
     当前实现对应的实体,D为当前实现对应的Dao接口，并且实现getDao接口，getDao需要你自己创建当前实现对应
@@ -124,10 +128,10 @@
     public class TestServiceImpl extends HotServiceImpl<Bean,TestDao> implements TestService {
 
     	@Autowired
-    	aaaDao dao;
+    	TestDao dao;
 
     	@Override
-    	public aaaDao getDao() {
+    	public TestDao getDao() {
     		return dao;
     	}
     }
